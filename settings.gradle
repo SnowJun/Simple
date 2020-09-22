@@ -1,0 +1,6 @@
+include ':Base'
+include ':Util'
+include ':Image'
+include ':Net'
+include ':app'
+rootProject.name = "Simple"
