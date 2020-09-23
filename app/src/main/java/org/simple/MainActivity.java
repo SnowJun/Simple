@@ -1,6 +1,8 @@
 package org.simple;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,37 +13,104 @@ import org.simple.net.SimpleNet;
 import org.simple.net.angency.NetAgencyEnum;
 import org.simple.net.callback.StringCallBack;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Simple
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView tvInfo;
+    private TextView tvContent;
+    private Button btnGet;
+    private Button btnPostParas;
+    private Button btnPostJson;
+
+    private static final String URL = "http://172.16.30.22:8080/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvInfo = findViewById(R.id.tv_info);
+        init();
+        initView();
         test();
     }
 
+    private void init() {
+        SimpleNet.init().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP).build();
+    }
+
+    private void initView() {
+        tvContent = findViewById(R.id.tv_content);
+        btnGet = findViewById(R.id.btn_get);
+        btnPostParas = findViewById(R.id.btn_post_paras);
+        btnPostJson = findViewById(R.id.btn_post_json);
+        btnGet.setOnClickListener(this);
+        btnPostParas.setOnClickListener(this);
+        btnPostJson.setOnClickListener(this);
+    }
+
     private void test() {
-        SimpleNet.init().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).build();
+
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_get:
+                doGet();
+                break;
+            case R.id.btn_post_paras:
+                doPostParas();
+                break;
+            case R.id.btn_post_json:
+                doPostJson();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void doPostJson() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("id","6d6a190d3b9a27fe958ed0ce01e161e9");
-            jsonObject.put("helpUserId","10000040");
+            jsonObject.put("userName", "SnowJun");
+            jsonObject.put("password", "123456");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         SimpleNet
-                .<JSONObject>post("https://app-dev.qms888.com/qmsnode/card/updateCardVoucherHelpShare")
+                .<JSONObject>post(URL+"login1")
                 .body(jsonObject)
                 .excute(new StringCallBack() {
+                    @Override
+                    public void onSuccess(String result) {
+                        tvContent.setText(result);
+                    }
+
+                    @Override
+                    public void onFail(String reason) {
+                        SimpleLog.e("onFail：reason->" + reason);
+                    }
+
+                    @Override
+                    public void onException(Exception e) {
+                        SimpleLog.e("onException：e->" + e.getMessage());
+                    }
+                });
+        tvContent.setText("请求中，请稍后...");
+    }
+
+    private void doPostParas() {
+        Map<String,String> paras = new HashMap<>();
+        paras.put("userName","snowjun");
+        paras.put("password","123456");
+        SimpleNet.post(URL+"/login").paras(paras).excute(new StringCallBack() {
             @Override
             public void onSuccess(String result) {
-                tvInfo.setText("请求响应"+result);
+                tvContent.setText(result);
             }
 
             @Override
@@ -52,10 +121,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onException(Exception e) {
                 SimpleLog.e("onException：e->" + e.getMessage());
-                SimpleLog.e("onException：e->" + e.getCause());
-                SimpleLog.e("onException：e->" + e.getClass());
             }
         });
-
+        tvContent.setText("请求中，请稍后...");
     }
+
+    private void doGet() {
+        Map<String,String> paras = new HashMap<>();
+        paras.put("id","id111");
+        paras.put("code","code222");
+        SimpleNet.get(URL+"/info").paras(paras).excute(new StringCallBack() {
+            @Override
+            public void onSuccess(String result) {
+                tvContent.setText(result);
+            }
+
+            @Override
+            public void onFail(String reason) {
+                SimpleLog.e("onFail：reason->" + reason);
+            }
+
+            @Override
+            public void onException(Exception e) {
+                SimpleLog.e("onException：e->" + e.getMessage());
+            }
+        });
+        tvContent.setText("请求中，请稍后...");
+    }
+
 }

@@ -13,15 +13,14 @@ import java.util.Set;
  *
  * @author Simple
  * @date 2020/9/9
- * @desc
- * 请求参数
+ * @desc 请求参数
  */
 public class Paras {
 
     /**
      * 请求参数的键值对
      */
-    private Map<String,String> paras = new HashMap<>();
+    private Map<String, String> paras = new HashMap<>();
 
     public Map<String, String> getParas() {
         return paras;
@@ -31,50 +30,51 @@ public class Paras {
         this.paras = paras;
     }
 
-    public void addParas(@NonNull String key, String value){
-        paras.put(key,value);
+    public void addParas(@NonNull String key, String value) {
+        paras.put(key, value);
     }
 
     /**
      * 生成表单参数
+     *
      * @return
      */
-    public String genParasStr(){
-        if (paras.isEmpty()){
+    public String genParasStr() {
+        if (paras.isEmpty()) {
             return null;
         }
         StringBuffer sb = new StringBuffer();
-        Set<Map.Entry<String,String>> entrySet = paras.entrySet();
-        for (Map.Entry<String, String> entry:entrySet){
+        Set<Map.Entry<String, String>> entrySet = paras.entrySet();
+        for (Map.Entry<String, String> entry : entrySet) {
             sb.append(entry.getKey())
                     .append("=")
                     .append(entry.getValue())
                     .append("&");
         }
         String string = sb.toString();
-        return string.substring(0,string.length()-2);
+        return string.substring(0,string.length()-1);
     }
 
     /**
      * 生成表单参数
+     *
      * @return
      */
     public String genParasStrGet() throws UnsupportedEncodingException {
-        if (paras.isEmpty()){
+        if (paras.isEmpty()) {
             return null;
         }
         StringBuffer sb = new StringBuffer();
-        Set<Map.Entry<String,String>> entrySet = paras.entrySet();
-        for (Map.Entry<String, String> entry:entrySet){
+        Set<Map.Entry<String, String>> entrySet = paras.entrySet();
+        for (Map.Entry<String, String> entry : entrySet) {
             sb.append(entry.getKey())
                     .append("=")
-                    .append(URLEncoder.encode(entry.getValue(),"utf-8"))
+                    .append(URLEncoder.encode(entry.getValue(), "utf-8"))
                     .append("&");
         }
         String string = sb.toString();
-        return string.substring(0,string.length()-2);
+        return string.substring(0, string.length() - 2);
     }
-
 
 
 }

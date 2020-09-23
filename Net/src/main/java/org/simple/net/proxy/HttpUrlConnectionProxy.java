@@ -15,7 +15,10 @@ import org.simple.net.response.Response;
 import org.simple.net.util.SimpleLog;
 import org.simple.net.util.TaskUtil;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -167,18 +170,29 @@ public class HttpUrlConnectionProxy implements NetProxy {
             if (e instanceof SocketTimeoutException) {
                 //超时重试
                 if (request.getRetryCount() > 0) {
+                    SimpleLog.e("网络超时，进行重试");
                     request.setRetryCount(request.getRetryCount() - 1);
+                    requests.remove(request);
+                    if (request.isCanceled()) {
+                        SimpleLog.e("网络已取消");
+                        return null;
+                    }
+                    excute(request);
+                }else {
+                    Response response = new Response();
+                    response.setCode(Code.RESP0NSE_EXCEPTION);
+                    response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "网络超时：" + e.getMessage()).toString());
+                    requests.remove(request);
+                    if (request.isCanceled()) {
+                        SimpleLog.e("网络请求已取消");
+                        return null;
+                    }
+                    return response;
                 }
-                requests.remove(request);
-                if (request.isCanceled()) {
-                    SimpleLog.e("网络请求已取消");
-                    return null;
-                }
-                excute(request);
             } else {
                 Response response = new Response();
                 response.setCode(Code.RESP0NSE_EXCEPTION);
-                response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "网络超时" + e.getMessage()).toString());
+                response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "IO异常：" + e.getMessage()).toString());
                 requests.remove(request);
                 if (request.isCanceled()) {
                     SimpleLog.e("网络请求已取消");
@@ -239,6 +253,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
             }
         }
         String parasStr = request.getParas().genParasStr();
+        SimpleLog.d("参数："+parasStr);
         if (null != parasStr && request.getMethod() != RequestMethod.METHOD_GET) {
             connection.setDoOutput(true);
             //不是get请求添加参数
@@ -261,16 +276,43 @@ public class HttpUrlConnectionProxy implements NetProxy {
                 outputStream.flush();
                 outputStream.close();
             } else if (o instanceof File) {
-                //todo  文件上传
-//                    connection.setRequestProperty("Content-Type","application/stream");
-//                    connection.setRequestProperty("Charset","utf-8");
-//                    connection.setRequestProperty("Connection","Keep-Alive");
-//                    connection.getOutputStream().write();
+                //上传文件分割线
+                String BOUNDARY = "#--------------------------------#";
+                String NEW_LINE = "\r\n";
+                String PREFIX = "--";
+                File file = (File) o;
+                connection.setRequestProperty("Charset", "utf-8");
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                connection.setRequestProperty("multipart/form-data;boundary=", BOUNDARY);
+
+                OutputStream outputStream = connection.getOutputStream();
+                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+                dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
+                dataOutputStream.writeBytes("Content-Disposition: form-data; " + "name=\""
+                        + "uploadFile" + "\"" + "; filename=\"" + "file-" + System.currentTimeMillis()
+                        + "\"" + NEW_LINE);
+
+                InputStream inputStream = new FileInputStream(file);
+                DataInputStream dataInputStream = new DataInputStream(inputStream);
+                int bytes = 0;
+                byte[] buffer = new byte[1024];
+                while ((bytes = dataInputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytes);
+                }
+                dataInputStream.close();
+
+                dataOutputStream.write((NEW_LINE + PREFIX + BOUNDARY + PREFIX + NEW_LINE).getBytes());
+
+                dataOutputStream.flush();
+                dataOutputStream.close();
             }
         }
 
         connection.connect();
         int code = connection.getResponseCode();
+        if (code != HttpURLConnection.HTTP_OK) {
+            throw new IOException("HTTP RESPONSE CODE ERROR :" + code);
+        }
         String message = connection.getResponseMessage();
         InputStream inputStream = connection.getInputStream();
 
