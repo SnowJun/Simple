@@ -8,10 +8,51 @@
     tools:context=".MainActivity">
 
 
+    <TextView
+        android:id="@+id/tv_agency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="代理:HttpUrlConnection"
+        android:textSize="18dp" />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_httpurlconnection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="HttpUrlConnection"
+            android:textAllCaps="false" />
+
+
+        <Button
+            android:id="@+id/btn_okhttp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="OkHttp"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="操作"
+        android:textSize="18dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
 
@@ -41,19 +82,29 @@
             android:text="postJson"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/btn_post_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="上传文件"
+            android:textAllCaps="false" />
+
     </LinearLayout>
 
 
     <TextView
-        android:padding="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="返回结果" />
+        android:padding="10dp"
+        android:text="返回结果"
+        android:textSize="18dp" />
 
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="10dp" />
 
 
 </LinearLayout>

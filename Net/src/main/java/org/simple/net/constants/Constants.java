@@ -40,6 +40,6 @@ public class Constants {
     /**
      * 默认网络代理为HttpUrlConnection
      */
-    public static final NetAgencyEnum NET_AGENCY_ENUM = NetAgencyEnum.AGENCY_OKHTTP;
+    public static final NetAgencyEnum NET_AGENCY_ENUM = NetAgencyEnum.AGENCY_HTTPURLCONNECTION;
 
 }

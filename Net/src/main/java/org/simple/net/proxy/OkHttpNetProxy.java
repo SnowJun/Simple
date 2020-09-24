@@ -11,6 +11,7 @@ import org.simple.net.request.RequestMethod;
 import org.simple.net.response.Body;
 import org.simple.net.response.Code;
 import org.simple.net.response.Response;
+import org.simple.net.util.SimpleLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * org.simple.net
@@ -44,6 +46,12 @@ public class OkHttpNetProxy implements NetProxy {
 
     @Override
     public void init() {
+        builder.addInterceptor(new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                SimpleLog.d(message);
+            }
+        }).setLevel(HttpLoggingInterceptor.Level.BODY));
         client = builder.build();
     }
 

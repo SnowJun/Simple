@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * org.simple.net.proxy
@@ -178,7 +179,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
                         return null;
                     }
                     excute(request);
-                }else {
+                } else {
                     Response response = new Response();
                     response.setCode(Code.RESP0NSE_EXCEPTION);
                     response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "网络超时：" + e.getMessage()).toString());
@@ -240,6 +241,10 @@ public class HttpUrlConnectionProxy implements NetProxy {
         connection.setReadTimeout((int) readTimeOut);
         connection.setRequestMethod(request.getMethod().getMethod());
         connection.setDoInput(true);
+        if (RequestMethod.METHOD_GET != request.getMethod()) {
+            connection.setDoOutput(true);
+            connection.setUseCaches(false);
+        }
 
         //添加自定义的header
         Header requestHeader = request.getHeader();
@@ -253,7 +258,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
             }
         }
         String parasStr = request.getParas().genParasStr();
-        SimpleLog.d("参数："+parasStr);
+        SimpleLog.d("参数：" + parasStr);
         if (null != parasStr && request.getMethod() != RequestMethod.METHOD_GET) {
             connection.setDoOutput(true);
             //不是get请求添加参数
@@ -277,20 +282,28 @@ public class HttpUrlConnectionProxy implements NetProxy {
                 outputStream.close();
             } else if (o instanceof File) {
                 //上传文件分割线
-                String BOUNDARY = "#--------------------------------#";
+                String BOUNDARY = UUID.randomUUID() + "";
                 String NEW_LINE = "\r\n";
+                //固定
                 String PREFIX = "--";
                 File file = (File) o;
                 connection.setRequestProperty("Charset", "utf-8");
                 connection.setRequestProperty("Connection", "Keep-Alive");
-                connection.setRequestProperty("multipart/form-data;boundary=", BOUNDARY);
+                connection.setRequestProperty("Accept-Encoding", "gzip");
+                connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
 
                 OutputStream outputStream = connection.getOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
                 dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
-                dataOutputStream.writeBytes("Content-Disposition: form-data; " + "name=\""
-                        + "uploadFile" + "\"" + "; filename=\"" + "file-" + System.currentTimeMillis()
-                        + "\"" + NEW_LINE);
+                //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
+                String string = "Content-Disposition: form-data; " + "name=\""
+                        + "file" + "\"" + "; filename=\"" + file.getName()
+                        + "\"" + NEW_LINE;
+                dataOutputStream.write(string.getBytes());
+                dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
+                dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
+                //两个换行 不然会把body算到header里面  出现大小限制异常
+                dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
 
                 InputStream inputStream = new FileInputStream(file);
                 DataInputStream dataInputStream = new DataInputStream(inputStream);
@@ -299,10 +312,12 @@ public class HttpUrlConnectionProxy implements NetProxy {
                 while ((bytes = dataInputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, bytes);
                 }
+                dataOutputStream.write((NEW_LINE).getBytes());
+                //后缀
+                dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
+                dataOutputStream.write((NEW_LINE).getBytes());
+
                 dataInputStream.close();
-
-                dataOutputStream.write((NEW_LINE + PREFIX + BOUNDARY + PREFIX + NEW_LINE).getBytes());
-
                 dataOutputStream.flush();
                 dataOutputStream.close();
             }
