@@ -48,6 +48,9 @@ public enum  RequestMethod {
     METHOD_DELETE("DELETE");
 
 
+    /**
+     * 请求方法名
+     */
     private String method;
 
     public String getMethod() {

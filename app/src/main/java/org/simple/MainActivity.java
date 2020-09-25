@@ -21,6 +21,7 @@ import com.lzy.imagepicker.ui.ImageGridActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.simple.net.SimpleNet;
+import org.simple.net.SimpleNetBuilder;
 import org.simple.net.angency.NetAgencyEnum;
 import org.simple.net.callback.StringCallBack;
 
@@ -97,12 +98,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 doPostJson();
                 break;
             case R.id.btn_okhttp:
-                SimpleNet.init().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP).build();
+                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP));
                 tvAgency.setText("代理：OkHttp");
                 break;
             case R.id.btn_httpurlconnection:
                 tvAgency.setText("代理：HttpUrlConnection");
-                SimpleNet.init().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).build();
+                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION));
                 break;
             case R.id.btn_post_file:
                 selectFile();

@@ -2,11 +2,11 @@ package org.simple.net.request;
 
 import androidx.annotation.NonNull;
 
+import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
 import org.simple.net.header.Header;
 import org.simple.net.paras.Paras;
-import org.simple.net.proxy.ProxyUtil;
 import org.simple.net.response.Response;
 
 import java.util.Map;
@@ -188,11 +188,15 @@ public class Request<B> {
      * @return
      */
     public Response excute() {
-        return ProxyUtil.getInstance().getNetProxy().excute(this);
+        return SimpleNet.getInstance().getNetProxy().excute(this);
     }
 
+    /**
+     * 异步执行
+     * @param callBack
+     */
     public void excute(NetCallBack callBack) {
-        ProxyUtil.getInstance().getNetProxy().excute(this, callBack);
+        SimpleNet.getInstance().getNetProxy().excute(this,callBack);
     }
 
     public boolean isCanceled() {
@@ -202,4 +206,5 @@ public class Request<B> {
     public void cancel(){
         isCanceled = true;
     }
+
 }

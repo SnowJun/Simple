@@ -19,16 +19,16 @@ public class TaskUtil {
     /**
      * 核心线程数
      */
-    private final int corePoolSize = 3;
+    private final int CORE_POOL_SIZE = 3;
     /**
      * 最大县城数
      */
-    private final int maximumPoolSize = 5;
+    private final int MAXIMUM_POOL_SIZE = 5;
     /**
      * 空闲状态下活跃时间
      * 2s
      */
-    private final int keepAliveTime = 2000;
+    private final int KEEP_ALIVE_TIME = 2000;
     /**
      * 线程池
      */
@@ -52,7 +52,7 @@ public class TaskUtil {
     }
 
     private void init() {
-        executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS,
+        executor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS,
                 new LinkedBlockingDeque<Runnable>(),
                 new TaskThreadFactory());
     }

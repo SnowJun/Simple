@@ -14,8 +14,10 @@ import android.os.Looper;
 public class UIThreadUtil {
 
 
+    /**
+     * 投递者handler对象
+     */
     private static Handler poster = new Handler(Looper.getMainLooper());
-
 
     /**
      * 将任务运行在主线程

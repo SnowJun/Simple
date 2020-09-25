@@ -1,10 +1,7 @@
 package org.simple.net;
 
 import org.simple.net.angency.NetAgencyEnum;
-import org.simple.net.angency.NetProxyFactory;
 import org.simple.net.constants.Constants;
-import org.simple.net.proxy.NetProxy;
-import org.simple.net.proxy.ProxyUtil;
 
 /**
  * org.simple.net
@@ -12,6 +9,7 @@ import org.simple.net.proxy.ProxyUtil;
  * @author Simple
  * @date 2020/9/9
  * @desc
+ * SimpleNet建造类
  */
 public class SimpleNetBuilder {
 
@@ -64,14 +62,23 @@ public class SimpleNetBuilder {
         return this;
     }
 
-    public ProxyUtil build() {
-        NetProxy netProxy = NetProxyFactory.genProxy(netAgencyEnum.getNetAgencyClass());
-        netProxy.setConnectionTimeOut(connectionTimeOut);
-        netProxy.setReadTimeOut(readTimeOut);
-        netProxy.setWriteTimeOut(writeTimeOut);
-        netProxy.retryCount(retryCount);
-        netProxy.init();
-        return ProxyUtil.getInstance().setNetProxy(netProxy);
+    public NetAgencyEnum getNetAgencyEnum() {
+        return netAgencyEnum;
     }
 
+    public long getConnectionTimeOut() {
+        return connectionTimeOut;
+    }
+
+    public long getReadTimeOut() {
+        return readTimeOut;
+    }
+
+    public long getWriteTimeOut() {
+        return writeTimeOut;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
 }
