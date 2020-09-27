@@ -1,13 +1,15 @@
 package org.simple.net.proxy;
 
-import org.json.JSONObject;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.header.Header;
-import org.simple.net.paras.Paras;
+import org.simple.net.request.BodyRequest;
 import org.simple.net.request.Request;
-import org.simple.net.request.RequestMethod;
+import org.simple.net.request.body.BodyType;
+import org.simple.net.request.body.FileBody;
+import org.simple.net.request.body.JsonBody;
+import org.simple.net.request.body.MultiBody;
 import org.simple.net.response.Body;
 import org.simple.net.response.Code;
 import org.simple.net.response.Response;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -123,6 +126,7 @@ public class OkHttpNetProxy implements NetProxy {
         }
     }
 
+
     @Override
     public void cancel(Object tag) {
         List<Call> callsRunning = client.dispatcher().runningCalls();
@@ -187,57 +191,95 @@ public class OkHttpNetProxy implements NetProxy {
 
     private Call genCall(Request request) {
         okhttp3.Request.Builder okHttpRequestBuilder = new okhttp3.Request.Builder();
-        Header header = request.getHeader();
-        if (null != header && null != header.getHeaders()) {
-            for (String str : header.getHeaders().keySet()) {
-                okHttpRequestBuilder.addHeader(str, header.getHeaders().get(str));
+        Map<String, String> headers = request.getHeader();
+        if (null != headers) {
+            for (String str : headers.keySet()) {
+                okHttpRequestBuilder.addHeader(str, headers.get(str));
             }
         }
-        //先判断参数  有参数以参数为准
-        Paras paras = request.getParas();
-        if (request.getMethod() == RequestMethod.METHOD_GET) {
-            if (null != paras && null != paras.getParas() && !paras.getParas().isEmpty()) {
-                HttpUrl.Builder urlBuilder = HttpUrl.parse(request.getUrl()).newBuilder();
-                for (String key : paras.getParas().keySet()) {
-                    urlBuilder.addQueryParameter(key, paras.getParas().get(key));
-                }
-                okHttpRequestBuilder.url(urlBuilder.build());
-            }else {
-                okHttpRequestBuilder.url(request.getUrl());
-            }
-        } else {
+        if (request.getMethod().isHasBody()) {
+            //需要body体的请求参数添加
+            addBodyParas(okHttpRequestBuilder, request);
             okHttpRequestBuilder.url(request.getUrl());
-        }
-        if (request.getMethod() != RequestMethod.METHOD_GET){
-            //先判断参数  有参数以参数为准
-            if (null != paras && null != paras.getParas() && !paras.getParas().isEmpty()) {
-                Set<String> keys = paras.getParas().keySet();
-                FormBody.Builder builder = new FormBody.Builder();
-                for (String key : keys) {
-                    builder.add(key, paras.getParas().get(key));
-                }
-                FormBody formBody = builder.build();
-                okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), formBody);
-            } else if (null != request.getBody()) {
-                //json 参数
-                Object o = request.getBody();
-                if (o instanceof JSONObject) {
-                    MediaType jsonType = MediaType.parse("application/json; charset=utf-8");
-                    RequestBody requestBody = RequestBody.create(jsonType, ((JSONObject) o).toString());
-                    okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody);
-                } else if (o instanceof File) {
-                    File file = (File) o;
-                    RequestBody requestBody = new MultipartBody.Builder()
-                            .setType(MultipartBody.FORM)
-                            .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/png"), file))
-                            .build();
-                    okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody);
-                }
-            }
+        } else {
+            //不需要body体的请求参数添加
+            addNoBodyParas(okHttpRequestBuilder, request);
         }
         okHttpRequestBuilder.tag(request.getTag());
         okhttp3.Request okHttpRequest = okHttpRequestBuilder.build();
         return client.newCall(okHttpRequest);
+    }
+
+    /**
+     * 添加body参数
+     * @param okHttpRequestBuilder
+     * @param request
+     */
+    private void addBodyParas(okhttp3.Request.Builder okHttpRequestBuilder, Request request) {
+        BodyRequest bodyRequest = (BodyRequest) request;
+        Map<String, String> paras = bodyRequest.getParas();
+        BodyType type = bodyRequest.getBody().type();
+        switch (type) {
+            case TYPE_FORM:
+                if (null != paras) {
+                    Set<String> keys = paras.keySet();
+                    FormBody.Builder builder = new FormBody.Builder();
+                    for (String key : keys) {
+                        builder.add(key, paras.get(key));
+                    }
+                    FormBody formBody = builder.build();
+                    okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), formBody);
+                }
+                break;
+            case TYPE_JSON:
+                JsonBody jsonBody = (JsonBody) bodyRequest.getBody();
+                MediaType jsonType = MediaType.parse("application/json; charset=utf-8");
+                RequestBody requestBody = RequestBody.create(jsonType, (jsonBody.getJsonObject()).toString());
+                okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody);
+                break;
+            case TYPE_FILE:
+                File file = ((FileBody) bodyRequest.getBody()).getFile();
+                RequestBody requestBody1 = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("*/*"), file))
+                        .build();
+                okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody1);
+                break;
+            case TYPE_MULTI:
+                Map<String, File> fileMap = ((MultiBody) bodyRequest.getBody()).getFileMap();
+                MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM);
+                if (null != paras) {
+                    for (String key : paras.keySet()) {
+                        requestBodyBuilder.addFormDataPart(key, paras.get(key));
+                    }
+                }
+                if (null != fileMap) {
+                    Set<Map.Entry<String, File>> entries = fileMap.entrySet();
+                    for (Map.Entry<String, File> entry : entries) {
+                        requestBodyBuilder.addFormDataPart(entry.getKey(), entry.getValue().getName(), RequestBody.create(MediaType.parse("*/*"), entry.getValue()));
+                    }
+                }
+                RequestBody requestBody2 = requestBodyBuilder.build();
+                okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody2);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 添加无body体参数
+     * @param okHttpRequestBuilder
+     * @param request
+     */
+    private void addNoBodyParas(okhttp3.Request.Builder okHttpRequestBuilder, Request request) {
+        Map<String, String> paras = request.getParas();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(request.getUrl()).newBuilder();
+        for (String key : paras.keySet()) {
+            urlBuilder.addQueryParameter(key, paras.get(key));
+        }
+        okHttpRequestBuilder.url(urlBuilder.build());
     }
 
 }

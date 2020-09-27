@@ -1,13 +1,17 @@
 package org.simple.net.proxy;
 
-import org.json.JSONObject;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.header.Header;
+import org.simple.net.request.BodyRequest;
 import org.simple.net.request.Request;
 import org.simple.net.request.RequestMethod;
+import org.simple.net.request.body.BodyType;
+import org.simple.net.request.body.FileBody;
+import org.simple.net.request.body.JsonBody;
+import org.simple.net.request.body.MultiBody;
 import org.simple.net.response.Body;
 import org.simple.net.response.CloseResponse;
 import org.simple.net.response.Code;
@@ -26,6 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -231,10 +236,20 @@ public class HttpUrlConnectionProxy implements NetProxy {
      */
     private CloseResponse excuteRequest(Request request) throws IOException {
         URL url = null;
-        if (request.getMethod() == RequestMethod.METHOD_GET && null != request.getParas().genParasStrGet()) {
-            url = new URL(request.getUrl() + "?" + request.getParas().genParasStrGet());
-        } else {
+        if (request.getMethod().isHasBody()) {
             url = new URL(request.getUrl());
+        } else {
+            Map<String, String> paras = request.getParas();
+            StringBuffer sb = new StringBuffer();
+            Set<Map.Entry<String, String>> entrySet = paras.entrySet();
+            for (Map.Entry<String, String> entry : entrySet) {
+                sb.append(entry.getKey())
+                        .append("=")
+                        .append(URLEncoder.encode(entry.getValue(), "utf-8"))
+                        .append("&");
+            }
+            String string = sb.toString();
+            url = new URL(request.getUrl() + "?" + string.substring(0, string.length() - 2));
         }
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout((int) connectionTimeOut);
@@ -247,80 +262,17 @@ public class HttpUrlConnectionProxy implements NetProxy {
         }
 
         //添加自定义的header
-        Header requestHeader = request.getHeader();
-        if (null != requestHeader &&
-                null != requestHeader.getHeaders() &&
-                !requestHeader.getHeaders().isEmpty()) {
-            Map<String, String> map = requestHeader.getHeaders();
-            Set<Map.Entry<String, String>> entries = map.entrySet();
+        Map<String, String> headers = request.getHeader();
+        if (null != headers &&
+                !headers.isEmpty()) {
+            Set<Map.Entry<String, String>> entries = headers.entrySet();
             for (Map.Entry<String, String> entry : entries) {
                 connection.setRequestProperty(entry.getKey(), entry.getValue());
             }
         }
-        String parasStr = request.getParas().genParasStr();
-        SimpleLog.d("参数：" + parasStr);
-        if (null != parasStr && request.getMethod() != RequestMethod.METHOD_GET) {
-            connection.setDoOutput(true);
-            //不是get请求添加参数
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Charset", "utf-8");
-            connection.setRequestProperty("Connection", "Keep-Alive");
-            OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(parasStr.getBytes());
-            outputStream.flush();
-            outputStream.close();
-        } else if (null != request.getBody()) {
-            connection.setDoOutput(true);
-            Object o = request.getBody();
-            if (o instanceof JSONObject) {
-                connection.setRequestProperty("Content-Type", "application/json");
-                connection.setRequestProperty("Charset", "utf-8");
-                connection.setRequestProperty("Connection", "Keep-Alive");
-                OutputStream outputStream = connection.getOutputStream();
-                connection.getOutputStream().write(((JSONObject) o).toString().getBytes());
-                outputStream.flush();
-                outputStream.close();
-            } else if (o instanceof File) {
-                //上传文件分割线
-                String BOUNDARY = UUID.randomUUID() + "";
-                String NEW_LINE = "\r\n";
-                //固定
-                String PREFIX = "--";
-                File file = (File) o;
-                connection.setRequestProperty("Charset", "utf-8");
-                connection.setRequestProperty("Connection", "Keep-Alive");
-                connection.setRequestProperty("Accept-Encoding", "gzip");
-                connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
 
-                OutputStream outputStream = connection.getOutputStream();
-                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-                dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
-                //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
-                String string = "Content-Disposition: form-data; " + "name=\""
-                        + "file" + "\"" + "; filename=\"" + file.getName()
-                        + "\"" + NEW_LINE;
-                dataOutputStream.write(string.getBytes());
-                dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
-                dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
-                //两个换行 不然会把body算到header里面  出现大小限制异常
-                dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
-
-                InputStream inputStream = new FileInputStream(file);
-                DataInputStream dataInputStream = new DataInputStream(inputStream);
-                int bytes = 0;
-                byte[] buffer = new byte[1024];
-                while ((bytes = dataInputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytes);
-                }
-                dataOutputStream.write((NEW_LINE).getBytes());
-                //后缀
-                dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
-                dataOutputStream.write((NEW_LINE).getBytes());
-
-                dataInputStream.close();
-                dataOutputStream.flush();
-                dataOutputStream.close();
-            }
+        if (request.getMethod().isHasBody()) {
+            addBodyParas(connection, request);
         }
 
         connection.connect();
@@ -355,6 +307,201 @@ public class HttpUrlConnectionProxy implements NetProxy {
         response.setProtocal("");
         response.setConnection(connection);
         return response;
+    }
+
+    private void addBodyParas(HttpURLConnection connection, Request request) throws IOException {
+        BodyRequest bodyRequest = (BodyRequest) request;
+        BodyType type = bodyRequest.getBody().type();
+        Map<String, String> paras = bodyRequest.getParas();
+        switch (type) {
+            case TYPE_FORM:
+                String parasStr = genParasStr(paras);
+                if (null != parasStr) {
+                    //不是get请求添加参数
+                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    connection.setRequestProperty("Charset", "utf-8");
+                    connection.setRequestProperty("Connection", "Keep-Alive");
+                    OutputStream outputStream = connection.getOutputStream();
+                    outputStream.write(parasStr.getBytes());
+                    outputStream.flush();
+                    outputStream.close();
+                }
+                break;
+            case TYPE_JSON:
+                JsonBody jsonBody = (JsonBody) bodyRequest.getBody();
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Charset", "utf-8");
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                OutputStream outputStream = connection.getOutputStream();
+                connection.getOutputStream().write((jsonBody.getJsonObject()).toString().getBytes());
+                outputStream.flush();
+                outputStream.close();
+                break;
+            case TYPE_FILE:
+                genFileBody(connection, request);
+                break;
+            case TYPE_MULTI:
+                genMultiBody(connection, request);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 写入多文件或者混参数
+     *
+     * @param connection
+     * @param request
+     * @throws IOException
+     */
+    private void genMultiBody(HttpURLConnection connection, Request request) throws IOException {
+        BodyRequest bodyRequest = (BodyRequest) request;
+        MultiBody multiBody = (MultiBody) bodyRequest.getBody();
+        Map<String, File> fileMap = multiBody.getFileMap();
+        Map<String, String> paras = request.getParas();
+        if (null == fileMap || fileMap.isEmpty()) {
+            //没有文件混合参数
+            throw new IOException("如果只是参数，请采用postForm传参");
+        }
+        //上传文件分割线
+        String BOUNDARY = UUID.randomUUID() + "";
+        String NEW_LINE = "\r\n";
+        //固定
+        String PREFIX = "--";
+        connection.setRequestProperty("Charset", "utf-8");
+        connection.setRequestProperty("Connection", "Keep-Alive");
+        connection.setRequestProperty("Accept-Encoding", "gzip");
+        connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
+
+        OutputStream outputStream = connection.getOutputStream();
+        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+
+        if (null != paras) {
+            for (String key : paras.keySet()) {
+                if (null != paras.get(key)) {
+                    dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
+                    //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
+                    String string = "Content-Disposition: form-data; " + "name=\""
+                            + key + NEW_LINE;
+                    dataOutputStream.write(string.getBytes());
+                    dataOutputStream.write(("Content-Type: text/plain" + NEW_LINE).getBytes());
+                    dataOutputStream.write(("Content-Length: " + string.length()).getBytes());
+                    //两个换行 不然会把body算到header里面  出现大小限制异常
+                    dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
+                    dataOutputStream.write(paras.get(key).getBytes());
+                    dataOutputStream.write((NEW_LINE).getBytes());
+                    //后缀
+                    dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
+                    dataOutputStream.write((NEW_LINE).getBytes());
+
+                }
+            }
+        }
+
+        Set<Map.Entry<String, File>> entrySet = fileMap.entrySet();
+        for (Map.Entry<String, File> entry : entrySet) {
+            String key = entry.getKey();
+            File file = entry.getValue();
+            dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
+            //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
+            String string = "Content-Disposition: form-data; " + "name=\""
+                    + key + "\"" + "; filename=\"" + file.getName()
+                    + "\"" + NEW_LINE;
+            dataOutputStream.write(string.getBytes());
+            dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
+            dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
+            //两个换行 不然会把body算到header里面  出现大小限制异常
+            dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
+
+            InputStream inputStream = new FileInputStream(file);
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
+            int bytes = 0;
+            byte[] buffer = new byte[1024];
+            while ((bytes = dataInputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytes);
+            }
+            dataOutputStream.write((NEW_LINE).getBytes());
+            //后缀
+            dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
+            dataOutputStream.write((NEW_LINE).getBytes());
+            dataInputStream.close();
+        }
+        dataOutputStream.flush();
+        dataOutputStream.close();
+    }
+
+    /**
+     * 写入文件参数
+     *
+     * @param connection
+     * @param request
+     * @throws IOException
+     */
+    private void genFileBody(HttpURLConnection connection, Request request) throws IOException {
+        BodyRequest bodyRequest = (BodyRequest) request;
+        FileBody fileBody = (FileBody) bodyRequest.getBody();
+        //上传文件分割线
+        String BOUNDARY = UUID.randomUUID() + "";
+        String NEW_LINE = "\r\n";
+        //固定
+        String PREFIX = "--";
+        File file = (File) fileBody.getFile();
+        connection.setRequestProperty("Charset", "utf-8");
+        connection.setRequestProperty("Connection", "Keep-Alive");
+        connection.setRequestProperty("Accept-Encoding", "gzip");
+        connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + BOUNDARY);
+
+        OutputStream outputStream = connection.getOutputStream();
+        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+        dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
+        //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
+        String string = "Content-Disposition: form-data; " + "name=\""
+                + "file" + "\"" + "; filename=\"" + file.getName()
+                + "\"" + NEW_LINE;
+        dataOutputStream.write(string.getBytes());
+        dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
+        dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
+        //两个换行 不然会把body算到header里面  出现大小限制异常
+        dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
+
+        InputStream inputStream = new FileInputStream(file);
+        DataInputStream dataInputStream = new DataInputStream(inputStream);
+        int bytes = 0;
+        byte[] buffer = new byte[1024];
+        while ((bytes = dataInputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytes);
+        }
+        dataOutputStream.write((NEW_LINE).getBytes());
+        //后缀
+        dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
+        dataOutputStream.write((NEW_LINE).getBytes());
+
+        dataInputStream.close();
+        dataOutputStream.flush();
+        dataOutputStream.close();
+    }
+
+
+    /**
+     * 生成表单参数
+     *
+     * @return
+     */
+    private String genParasStr(Map<String, String> paras) {
+        if (paras.isEmpty()) {
+            return null;
+        }
+        StringBuffer sb = new StringBuffer();
+        Set<Map.Entry<String, String>> entrySet = paras.entrySet();
+        for (Map.Entry<String, String> entry : entrySet) {
+            sb.append(entry.getKey())
+                    .append("=")
+                    .append(entry.getValue())
+                    .append("&");
+        }
+        String string = sb.toString();
+        return string.substring(0, string.length() - 1);
     }
 
 

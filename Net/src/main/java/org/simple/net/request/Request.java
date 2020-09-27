@@ -5,10 +5,9 @@ import androidx.annotation.NonNull;
 import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
-import org.simple.net.header.Header;
-import org.simple.net.paras.Paras;
 import org.simple.net.response.Response;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,7 +18,7 @@ import java.util.Map;
  * @desc 请求
  * B   body体的内容
  */
-public class Request<B> {
+public class Request<R extends Request> {
 
     /**
      * 请求地址
@@ -28,15 +27,12 @@ public class Request<B> {
     /**
      * 请求头
      */
-    private Header header = new Header();
+    private Map<String, String> headers;
     /**
-     * 请求的参数
+     * 请求参数
      */
-    private Paras paras = new Paras();
-    /**
-     * 请求体
-     */
-    private B body;
+    private Map<String, String> paras;
+
     /**
      * 请求方式
      * 默认post请求
@@ -57,7 +53,7 @@ public class Request<B> {
     private boolean isCanceled;
 
 
-    public Request<B> tag(Object tag) {
+    public Request tag(Object tag) {
         this.tag = tag;
         return this;
     }
@@ -66,26 +62,10 @@ public class Request<B> {
         return tag;
     }
 
-    /**
-     * 设置body内容
-     *
-     * @param body
-     * @return
-     */
-    public Request<B> body(B body) {
-        this.body = body;
-        return this;
-    }
 
-    /**
-     * 设置url地址
-     *
-     * @param url
-     * @return
-     */
-    public Request<B> url(@NonNull String url) {
+    public  R url(String url) {
         this.url = url;
-        return this;
+        return (R) this;
     }
 
     /**
@@ -95,9 +75,12 @@ public class Request<B> {
      * @param value
      * @return
      */
-    public Request<B> addHeader(@NonNull String key, String value) {
-        this.header.addHeader(key, value);
-        return this;
+    public  R addHeader(@NonNull String key, String value) {
+        if (null == headers) {
+            headers = new HashMap<String, String>();
+        }
+        headers.put(key, value);
+        return (R) this;
     }
 
     /**
@@ -106,9 +89,9 @@ public class Request<B> {
      * @param headers
      * @return
      */
-    public Request<B> headers(Map<String, String> headers) {
-        this.header.setHeaders(headers);
-        return this;
+    public  R headers(Map<String, String> headers) {
+        this.headers = headers;
+        return (R) this;
     }
 
     /**
@@ -118,9 +101,12 @@ public class Request<B> {
      * @param value
      * @return
      */
-    public Request<B> addParas(@NonNull String key, String value) {
-        paras.addParas(key, value);
-        return this;
+    public R addParas(@NonNull String key, String value) {
+        if (null == paras) {
+            paras = new HashMap<String, String>();
+        }
+        paras.put(key, value);
+        return (R) this;
     }
 
     /**
@@ -129,9 +115,9 @@ public class Request<B> {
      * @param paras
      * @return
      */
-    public Request<B> paras(Map<String, String> paras) {
-        this.paras.setParas(paras);
-        return this;
+    public  R paras(Map<String, String> paras) {
+        this.paras = paras;
+        return (R) this;
     }
 
     /**
@@ -139,9 +125,9 @@ public class Request<B> {
      *
      * @param requestMethod
      */
-    public Request<B> method(RequestMethod requestMethod) {
+    public  R method(RequestMethod requestMethod) {
         method = requestMethod;
-        return this;
+        return (R) this;
     }
 
     /**
@@ -158,26 +144,23 @@ public class Request<B> {
      *
      * @param retryCount
      */
-    public Request<B> setRetryCount(int retryCount) {
+    public  R setRetryCount(int retryCount) {
         this.retryCount = retryCount;
-        return this;
+        return (R) this;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public Header getHeader() {
-        return header;
+    public Map<String, String> getHeader() {
+        return headers;
     }
 
-    public Paras getParas() {
+    public Map<String, String> getParas() {
         return paras;
     }
 
-    public B getBody() {
-        return body;
-    }
 
     public RequestMethod getMethod() {
         return method;
@@ -185,6 +168,7 @@ public class Request<B> {
 
     /**
      * 使用同步的时候注意线程问题
+     *
      * @return
      */
     public Response excute() {
@@ -193,17 +177,18 @@ public class Request<B> {
 
     /**
      * 异步执行
+     *
      * @param callBack
      */
     public void excute(NetCallBack callBack) {
-        SimpleNet.getInstance().getNetProxy().excute(this,callBack);
+        SimpleNet.getInstance().getNetProxy().excute(this, callBack);
     }
 
     public boolean isCanceled() {
         return isCanceled;
     }
 
-    public void cancel(){
+    public void cancel() {
         isCanceled = true;
     }
 

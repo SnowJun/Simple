@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void uploadFile(File file) {
-        SimpleNet.<File>post(URL+"/uploadFile").body(file).excute(new StringCallBack() {
+        SimpleNet.postFile(URL+"/uploadFile").file(file).excute(new StringCallBack() {
             @Override
             public void onSuccess(String result) {
                 tvContent.setText(result);
@@ -205,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         SimpleNet
-                .<JSONObject>post(URL + "login1")
-                .body(jsonObject)
+                .<JSONObject>postJson(URL + "login1")
+                .json(jsonObject)
                 .excute(new StringCallBack() {
                     @Override
                     public void onSuccess(String result) {
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Map<String, String> paras = new HashMap<>();
         paras.put("userName", "snowjun");
         paras.put("password", "123456");
-        SimpleNet.post(URL + "/login").paras(paras).excute(new StringCallBack() {
+        SimpleNet.postForm(URL + "/login").paras(paras).excute(new StringCallBack() {
             @Override
             public void onSuccess(String result) {
                 tvContent.setText(result);
