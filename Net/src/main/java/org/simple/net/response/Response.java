@@ -1,7 +1,9 @@
 package org.simple.net.response;
 
-import org.simple.net.header.Header;
 import org.simple.net.request.Request;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * org.simple.net.response
@@ -33,10 +35,8 @@ public class Response {
      * 返回的Body体
      */
     private Body body;
-    /**
-     * header内容
-     */
-    private Header header = new Header();
+
+    private Map<String,String> headers = new HashMap<String, String>();
 
     public int getCode() {
         return code;
@@ -78,11 +78,16 @@ public class Response {
         this.body = body;
     }
 
-    public Header getHeader() {
-        return header;
+    public Map<String,String> getHeader() {
+        return headers;
     }
 
-    public void setHeader(Header header) {
-        this.header = header;
+    public void setHeader(Map<String,String> headers) {
+        this.headers = headers;
     }
+
+    public void addHeader(String key,String value){
+        headers.put(key,value);
+    }
+
 }

@@ -3,7 +3,6 @@ package org.simple.net.proxy;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
-import org.simple.net.header.Header;
 import org.simple.net.request.BodyRequest;
 import org.simple.net.request.Request;
 import org.simple.net.request.body.BodyType;
@@ -178,13 +177,11 @@ public class OkHttpNetProxy implements NetProxy {
         }
         result.setBody(body);
 
-        Header header = new Header();
         Headers headers = response.headers();
         Set<String> names = headers.names();
         for (String name : names) {
-            header.addHeader(name, headers.get(name));
+            result.addHeader(name,headers.get(name));
         }
-        result.setHeader(header);
         return result;
     }
 

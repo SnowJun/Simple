@@ -4,7 +4,6 @@ import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
-import org.simple.net.header.Header;
 import org.simple.net.request.BodyRequest;
 import org.simple.net.request.Request;
 import org.simple.net.request.RequestMethod;
@@ -285,16 +284,14 @@ public class HttpUrlConnectionProxy implements NetProxy {
 
 
         CloseResponse response = new CloseResponse();
-        Header header = new Header();
 
         Map<String, List<String>> connHeaders = connection.getHeaderFields();
         if (!connHeaders.isEmpty()) {
             Set<String> keys = connHeaders.keySet();
             for (String key : keys) {
-                header.getHeaders().put(key, connection.getHeaderField(key));
+                response.addHeader(key,connection.getHeaderField(key));
             }
         }
-        response.setHeader(header);
 
         Body body = new Body();
         body.setInputStreamData(inputStream);
