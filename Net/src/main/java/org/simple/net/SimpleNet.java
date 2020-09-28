@@ -3,13 +3,14 @@ package org.simple.net;
 import org.simple.net.angency.NetProxyFactory;
 import org.simple.net.constants.Constants;
 import org.simple.net.proxy.NetProxy;
-import org.simple.net.request.BodyRequest;
 import org.simple.net.request.FileRequest;
 import org.simple.net.request.FormRequest;
 import org.simple.net.request.JsonRequest;
 import org.simple.net.request.MultiRequest;
 import org.simple.net.request.Request;
 import org.simple.net.request.RequestMethod;
+
+import java.util.Map;
 
 /**
  * org.simple.net
@@ -26,7 +27,10 @@ public class SimpleNet {
      */
     private NetProxy netProxy;
 
-
+    /**
+     * 公共请求头
+     */
+    private Map<String,String> commonHeaders;
     /**
      * 获取单例对象
      *
@@ -66,6 +70,7 @@ public class SimpleNet {
         netProxy.setReadTimeOut(builder.getReadTimeOut());
         netProxy.setWriteTimeOut(builder.getWriteTimeOut());
         netProxy.init();
+        commonHeaders = builder.getCommonHeaders();
     }
 
     /**
@@ -78,12 +83,20 @@ public class SimpleNet {
     }
 
     /**
+     * 获取公共的请求头
+     * @return
+     */
+    public Map<String,String> getCommonHeaders(){
+        return commonHeaders;
+    }
+
+    /**
      * 生成post请求
      * 表单提交
      * @param url
      * @return
      */
-    public static BodyRequest postForm(String url) {
+    public static FormRequest postForm(String url) {
         return new FormRequest().url(url);
     }
     /**
@@ -92,7 +105,7 @@ public class SimpleNet {
      * @param url
      * @return
      */
-    public static BodyRequest postJson(String url) {
+    public static JsonRequest postJson(String url) {
         return new JsonRequest().url(url);
     }
     /**
@@ -101,7 +114,7 @@ public class SimpleNet {
      * @param url
      * @return
      */
-    public static BodyRequest postFile(String url) {
+    public static FileRequest postFile(String url) {
         return new FileRequest().url(url);
     }
     /**
@@ -110,7 +123,7 @@ public class SimpleNet {
      * @param url
      * @return
      */
-    public static BodyRequest postMulti(String url) {
+    public static MultiRequest postMulti(String url) {
         return new MultiRequest().url(url);
     }
 
@@ -120,7 +133,7 @@ public class SimpleNet {
      * @param url
      * @return
      */
-    public static <T> Request get(String url) {
+    public static  Request get(String url) {
         return new Request().url(url).method(RequestMethod.METHOD_GET);
     }
 

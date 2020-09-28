@@ -3,13 +3,15 @@ package org.simple.net;
 import org.simple.net.angency.NetAgencyEnum;
 import org.simple.net.constants.Constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * org.simple.net
  *
  * @author Simple
  * @date 2020/9/9
- * @desc
- * SimpleNet建造类
+ * @desc SimpleNet建造类
  */
 public class SimpleNetBuilder {
 
@@ -34,6 +36,11 @@ public class SimpleNetBuilder {
      * 重试次数
      */
     private int retryCount = Constants.RETRY_COUNT;
+
+    /**
+     * 公共的请求头
+     */
+    private Map<String, String> commonHeaders = new HashMap<>();
 
 
     public SimpleNetBuilder setNetAgency(NetAgencyEnum netAgency) {
@@ -62,6 +69,16 @@ public class SimpleNetBuilder {
         return this;
     }
 
+    public SimpleNetBuilder setHeader(Map<String, String> commonHeader) {
+        this.commonHeaders = commonHeader;
+        return this;
+    }
+
+    public SimpleNetBuilder addHeader(String key, String value) {
+        commonHeaders.put(key, value);
+        return this;
+    }
+
     public NetAgencyEnum getNetAgencyEnum() {
         return netAgencyEnum;
     }
@@ -80,5 +97,9 @@ public class SimpleNetBuilder {
 
     public int getRetryCount() {
         return retryCount;
+    }
+
+    public Map<String, String> getCommonHeaders() {
+        return commonHeaders;
     }
 }

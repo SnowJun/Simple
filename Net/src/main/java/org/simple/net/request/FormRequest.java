@@ -9,7 +9,7 @@ import org.simple.net.request.body.FormBody;
  * @date 2020/9/27
  * @desc
  */
-public class FormRequest extends BodyRequest<FormBody>{
+public class FormRequest extends BodyRequest<FormBody,FormRequest>{
 
     public FormRequest() {
         body = new FormBody();

@@ -1,6 +1,7 @@
 package org.simple.net.request.body;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,8 +15,15 @@ import java.util.Map;
 public class MultiBody extends RequestBody {
     /**
      * 文件参数
+     * 一个key  一个文件
      */
     private Map<String, File> fileMap;
+
+    /**
+     * 添加文件列表参数
+     * 一个key  多个文件
+     */
+    private Map<String, List<File>> fileListMap;
 
     @Override
     public BodyType type() {
@@ -30,5 +38,12 @@ public class MultiBody extends RequestBody {
         this.fileMap = fileMap;
     }
 
+    public Map<String, List<File>> getFileListMap() {
+        return fileListMap;
+    }
+
+    public void setFileListMap(Map<String, List<File>> fileListMap) {
+        this.fileListMap = fileListMap;
+    }
 
 }

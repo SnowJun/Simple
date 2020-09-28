@@ -11,7 +11,7 @@ import java.io.File;
  * @date 2020/9/27
  * @desc
  */
-public class FileRequest extends BodyRequest<FileBody> {
+public class FileRequest extends BodyRequest<FileBody,FileRequest> {
 
 
     public FileRequest() {
@@ -23,7 +23,6 @@ public class FileRequest extends BodyRequest<FileBody> {
      *
      * @param file
      */
-    @Override
     public FileRequest file(File file) {
         body.setFile(file);
         return this;

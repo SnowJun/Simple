@@ -23,6 +23,11 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/btn_httpurlconnection"
             android:layout_width="wrap_content"
@@ -39,6 +44,11 @@
             android:padding="10dp"
             android:text="OkHttp"
             android:textAllCaps="false" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
 
@@ -55,6 +65,10 @@
         android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/btn_get"
@@ -89,6 +103,39 @@
             android:padding="10dp"
             android:text="上传文件"
             android:textAllCaps="false" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_post_more_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="上传多文件"
+            android:textAllCaps="false" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

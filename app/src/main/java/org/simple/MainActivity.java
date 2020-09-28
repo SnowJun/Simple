@@ -2,7 +2,6 @@ package org.simple;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.loader.ImageLoader;
@@ -24,10 +24,12 @@ import org.simple.net.SimpleNet;
 import org.simple.net.SimpleNetBuilder;
 import org.simple.net.angency.NetAgencyEnum;
 import org.simple.net.callback.StringCallBack;
+import org.simple.net.request.MultiRequest;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,11 +50,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnPostParas;
     private Button btnPostJson;
     private Button btnPostFile;
+    private Button btnPostMoreFile;
 
     private Button btnHttpUrlConnection;
     private Button btnOkHttp;
 
-    private static final String URL = "http://172.16.30.57:8080/";
+    private static final String URL = "http://172.16.30.57:8080/simple/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +73,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPostParas = findViewById(R.id.btn_post_paras);
         btnPostJson = findViewById(R.id.btn_post_json);
         btnPostFile = findViewById(R.id.btn_post_file);
+        btnPostMoreFile = findViewById(R.id.btn_post_more_file);
         btnHttpUrlConnection = findViewById(R.id.btn_httpurlconnection);
         btnOkHttp = findViewById(R.id.btn_okhttp);
         btnGet.setOnClickListener(this);
         btnPostParas.setOnClickListener(this);
         btnPostJson.setOnClickListener(this);
         btnPostFile.setOnClickListener(this);
+        btnPostMoreFile.setOnClickListener(this);
         btnHttpUrlConnection.setOnClickListener(this);
         btnOkHttp.setOnClickListener(this);
     }
@@ -106,7 +111,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION));
                 break;
             case R.id.btn_post_file:
-                selectFile();
+                selectFile(1);
+                break;
+            case R.id.btn_post_more_file:
+                selectFile(3);
                 break;
             default:
                 break;
@@ -120,14 +128,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (resultCode == ImagePicker.RESULT_CODE_ITEMS) {
             if (data != null && requestCode == 100) {
                 ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                SimpleLog.d("回调数据数量："+images.size());
+                SimpleLog.d("回调数据数量：" + images.size());
                 for (ImageItem item : images) {
-                    SimpleLog.d("ImageItem-path："+item.path);
+                    SimpleLog.d("ImageItem-path：" + item.path);
                 }
-                if (null != images && images.size()>0){
+                if (null != images && images.size() == 1) {
                     ImageItem imageItem = images.get(0);
                     File file = new File(imageItem.path);
                     uploadFile(file);
+                } else if (null != images && images.size() > 1) {
+                    List<File> files = new ArrayList<>(images.size());
+                    for (ImageItem item : images) {
+                        File file = new File(item.path);
+                        files.add(file);
+                    }
+                    uploadFiles(files);
                 }
             } else {
                 Toast.makeText(this, "没有数据", Toast.LENGTH_SHORT).show();
@@ -138,23 +153,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 选择文件
+     *
+     * @param count 选择的数量
      */
-    private void selectFile() {
+    private void selectFile(int count) {
         ImagePicker imagePicker = ImagePicker.getInstance();
-        imagePicker.setMultiMode(false);
+        if (count == 1) {
+            imagePicker.setMultiMode(false);
+        } else if (count > 1) {
+            imagePicker.setMultiMode(true);
+            imagePicker.setSelectLimit(count);
+        } else {
+            return;
+        }
         imagePicker.setCrop(false);
         imagePicker.setShowCamera(false);
         imagePicker.setImageLoader(new ImageLoader() {
             @Override
             public void displayImage(Activity activity, String path, ImageView imageView, int width, int height) {
-                SimpleLog.d("displayImage-path:"+path);
-                imageView.setImageBitmap(BitmapFactory.decodeFile(path));
+                SimpleLog.d("displayImage-path:" + path);
+                Glide.with(getApplicationContext()).load(path).into(imageView);
             }
 
             @Override
             public void displayImagePreview(Activity activity, String path, ImageView imageView, int width, int height) {
-                SimpleLog.d("displayImagePreview-path:"+path);
-                imageView.setImageBitmap(BitmapFactory.decodeFile(path));
+                SimpleLog.d("displayImagePreview-path:" + path);
+                Glide.with(getApplicationContext()).load(path).into(imageView);
             }
 
             @Override
@@ -165,8 +189,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imagePicker.addOnImageSelectedListener(new ImagePicker.OnImageSelectedListener() {
             @Override
             public void onImageSelected(int position, ImageItem item, boolean isAdd) {
-                SimpleLog.d("选中position："+position);
-                SimpleLog.d("ImageItem-path："+item.path);
+                SimpleLog.d("选中position：" + position);
+                SimpleLog.d("ImageItem-path：" + item.path);
 
             }
         });
@@ -177,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void uploadFile(File file) {
-        SimpleNet.postFile(URL+"/uploadFile").file(file).excute(new StringCallBack() {
+        SimpleNet.postFile(URL + "/uploadFile").file(file).excute(new StringCallBack() {
             @Override
             public void onSuccess(String result) {
                 tvContent.setText(result);
@@ -194,6 +218,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         tvContent.setText("文件上传中..");
+    }
+
+
+    /**
+     * 上传多文件
+     * @param files
+     */
+    private void uploadFiles(List<File> files) {
+        MultiRequest request = SimpleNet.postMulti(URL + "/uploadFiles");
+        request.addFiles("files", files);
+        request.excute(new StringCallBack() {
+            @Override
+            public void onSuccess(String result) {
+                tvContent.setText(result);
+            }
+
+            @Override
+            public void onFail(String reason) {
+                SimpleLog.e("onFail：reason->" + reason);
+            }
+
+            @Override
+            public void onException(Exception e) {
+                SimpleLog.e("onException：e->" + e.getMessage());
+            }
+        });
+        tvContent.setText("多文件上传中..");
     }
 
     private void doPostJson() {

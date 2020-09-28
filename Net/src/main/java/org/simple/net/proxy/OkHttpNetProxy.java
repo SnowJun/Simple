@@ -1,5 +1,6 @@
 package org.simple.net.proxy;
 
+import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
@@ -180,7 +181,7 @@ public class OkHttpNetProxy implements NetProxy {
         Headers headers = response.headers();
         Set<String> names = headers.names();
         for (String name : names) {
-            result.addHeader(name,headers.get(name));
+            result.addHeader(name, headers.get(name));
         }
         return result;
     }
@@ -188,6 +189,12 @@ public class OkHttpNetProxy implements NetProxy {
 
     private Call genCall(Request request) {
         okhttp3.Request.Builder okHttpRequestBuilder = new okhttp3.Request.Builder();
+        Map<String, String> commonHeaders = SimpleNet.getInstance().getCommonHeaders();
+        if (null != commonHeaders) {
+            for (String str : commonHeaders.keySet()) {
+                okHttpRequestBuilder.addHeader(str, commonHeaders.get(str));
+            }
+        }
         Map<String, String> headers = request.getHeader();
         if (null != headers) {
             for (String str : headers.keySet()) {
@@ -209,6 +216,7 @@ public class OkHttpNetProxy implements NetProxy {
 
     /**
      * 添加body参数
+     *
      * @param okHttpRequestBuilder
      * @param request
      */
@@ -243,7 +251,9 @@ public class OkHttpNetProxy implements NetProxy {
                 okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody1);
                 break;
             case TYPE_MULTI:
-                Map<String, File> fileMap = ((MultiBody) bodyRequest.getBody()).getFileMap();
+                MultiBody multiBody = (MultiBody) bodyRequest.getBody();
+                Map<String, File> fileMap = multiBody.getFileMap();
+                Map<String, List<File>> fileListMap = multiBody.getFileListMap();
                 MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM);
                 if (null != paras) {
@@ -257,6 +267,17 @@ public class OkHttpNetProxy implements NetProxy {
                         requestBodyBuilder.addFormDataPart(entry.getKey(), entry.getValue().getName(), RequestBody.create(MediaType.parse("*/*"), entry.getValue()));
                     }
                 }
+                if (null != fileListMap) {
+                    Set<Map.Entry<String, List<File>>> entries = fileListMap.entrySet();
+                    for (Map.Entry<String, List<File>> entry : entries) {
+                        List<File> files = entry.getValue();
+                        if (null != files && !files.isEmpty()) {
+                            for (File file1 : files) {
+                                requestBodyBuilder.addFormDataPart(entry.getKey(),file1.getName(), RequestBody.create(MediaType.parse("*/*"), file1));
+                            }
+                        }
+                    }
+                }
                 RequestBody requestBody2 = requestBodyBuilder.build();
                 okHttpRequestBuilder = okHttpRequestBuilder.method(request.getMethod().getMethod(), requestBody2);
                 break;
@@ -267,6 +288,7 @@ public class OkHttpNetProxy implements NetProxy {
 
     /**
      * 添加无body体参数
+     *
      * @param okHttpRequestBuilder
      * @param request
      */

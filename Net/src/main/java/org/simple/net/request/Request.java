@@ -18,7 +18,7 @@ import java.util.Map;
  * @desc 请求
  * B   body体的内容
  */
-public class Request<R extends Request> {
+public class Request<R extends Request<R>> {
 
     /**
      * 请求地址
@@ -53,9 +53,9 @@ public class Request<R extends Request> {
     private boolean isCanceled;
 
 
-    public Request tag(Object tag) {
+    public R tag(Object tag) {
         this.tag = tag;
-        return this;
+        return (R) this;
     }
 
     public Object getTag() {

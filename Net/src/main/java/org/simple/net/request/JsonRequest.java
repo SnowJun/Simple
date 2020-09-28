@@ -10,14 +10,13 @@ import org.simple.net.request.body.JsonBody;
  * @date 2020/9/27
  * @desc
  */
-public class JsonRequest extends BodyRequest<JsonBody> {
+public class JsonRequest extends BodyRequest<JsonBody,JsonRequest> {
 
     public JsonRequest() {
         body = new JsonBody();
     }
 
-    @Override
-    public BodyRequest<JsonBody> json(JSONObject jsonObject) {
+    public JsonRequest json(JSONObject jsonObject) {
         body.setJsonObject(jsonObject);
         return this;
     }

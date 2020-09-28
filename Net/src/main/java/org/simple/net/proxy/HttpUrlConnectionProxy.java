@@ -1,10 +1,12 @@
 package org.simple.net.proxy;
 
+import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.request.BodyRequest;
+import org.simple.net.request.MultiRequest;
 import org.simple.net.request.Request;
 import org.simple.net.request.RequestMethod;
 import org.simple.net.request.body.BodyType;
@@ -261,6 +263,17 @@ public class HttpUrlConnectionProxy implements NetProxy {
         }
 
         //添加自定义的header
+        Map<String, String> commonHeaders = SimpleNet.getInstance().getCommonHeaders();
+        if (null != commonHeaders &&
+                !commonHeaders.isEmpty()) {
+            Set<Map.Entry<String, String>> entries = commonHeaders.entrySet();
+            for (Map.Entry<String, String> entry : entries) {
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+
+
+        //添加自定义的header
         Map<String, String> headers = request.getHeader();
         if (null != headers &&
                 !headers.isEmpty()) {
@@ -353,11 +366,12 @@ public class HttpUrlConnectionProxy implements NetProxy {
      * @throws IOException
      */
     private void genMultiBody(HttpURLConnection connection, Request request) throws IOException {
-        BodyRequest bodyRequest = (BodyRequest) request;
+        MultiRequest bodyRequest = (MultiRequest) request;
         MultiBody multiBody = (MultiBody) bodyRequest.getBody();
         Map<String, File> fileMap = multiBody.getFileMap();
+        Map<String, List<File>> fileListMap = multiBody.getFileListMap();
         Map<String, String> paras = request.getParas();
-        if (null == fileMap || fileMap.isEmpty()) {
+        if (!bodyRequest.hasFile()) {
             //没有文件混合参数
             throw new IOException("如果只是参数，请采用postForm传参");
         }
@@ -380,50 +394,83 @@ public class HttpUrlConnectionProxy implements NetProxy {
                     dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
                     //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
                     String string = "Content-Disposition: form-data; " + "name=\""
-                            + key + NEW_LINE;
+                            + key +"\""+ NEW_LINE;
                     dataOutputStream.write(string.getBytes());
-                    dataOutputStream.write(("Content-Type: text/plain" + NEW_LINE).getBytes());
-                    dataOutputStream.write(("Content-Length: " + string.length()).getBytes());
                     //两个换行 不然会把body算到header里面  出现大小限制异常
                     dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
                     dataOutputStream.write(paras.get(key).getBytes());
                     dataOutputStream.write((NEW_LINE).getBytes());
-                    //后缀
-                    dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
-                    dataOutputStream.write((NEW_LINE).getBytes());
-
                 }
             }
         }
 
         Set<Map.Entry<String, File>> entrySet = fileMap.entrySet();
-        for (Map.Entry<String, File> entry : entrySet) {
-            String key = entry.getKey();
-            File file = entry.getValue();
-            dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
-            //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
-            String string = "Content-Disposition: form-data; " + "name=\""
-                    + key + "\"" + "; filename=\"" + file.getName()
-                    + "\"" + NEW_LINE;
-            dataOutputStream.write(string.getBytes());
-            dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
-            dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
-            //两个换行 不然会把body算到header里面  出现大小限制异常
-            dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
+        if (null != fileMap && !fileMap.isEmpty()){
+            for (Map.Entry<String, File> entry : entrySet) {
+                String key = entry.getKey();
+                File file = entry.getValue();
+                dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
+                //这块的name和服务器的入参名字对应起来 name ="files" 服务器的入参名字为files
+                String string = "Content-Disposition: form-data; " + "name=\""
+                        + key + "\"" + "; filename=\"" + file.getName()
+                        + "\"" + NEW_LINE;
+                dataOutputStream.write(string.getBytes());
+                dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
+                dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
+                //两个换行 不然会把body算到header里面  出现大小限制异常
+                dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
 
-            InputStream inputStream = new FileInputStream(file);
-            DataInputStream dataInputStream = new DataInputStream(inputStream);
-            int bytes = 0;
-            byte[] buffer = new byte[1024];
-            while ((bytes = dataInputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytes);
+                InputStream inputStream = new FileInputStream(file);
+                DataInputStream dataInputStream = new DataInputStream(inputStream);
+                int bytes = 0;
+                byte[] buffer = new byte[1024];
+                while ((bytes = dataInputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytes);
+                }
+                dataOutputStream.write((NEW_LINE).getBytes());
+                dataInputStream.close();
             }
-            dataOutputStream.write((NEW_LINE).getBytes());
-            //后缀
-            dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
-            dataOutputStream.write((NEW_LINE).getBytes());
-            dataInputStream.close();
         }
+
+
+        Set<Map.Entry<String, List<File>>> entrySet1 = fileListMap.entrySet();
+        if (null != fileListMap && ! fileListMap.isEmpty()){
+            for (Map.Entry<String, List<File>> entry : entrySet1) {
+                String key = entry.getKey();
+                List<File> files = entry.getValue();
+                if (null != files && !files.isEmpty()){
+                    for (File file : files) {
+                        dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
+                        //这块的name和服务器的入参名字对应起来 name ="files" 服务器的入参名字为files
+                        String string = "Content-Disposition: form-data; " + "name=\""
+                                + key + "\"" + "; filename=\"" + file.getName()
+                                + "\"" + NEW_LINE;
+                        dataOutputStream.write(string.getBytes());
+                        dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
+                        dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
+                        //两个换行 不然会把body算到header里面  出现大小限制异常
+                        dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
+
+                        InputStream inputStream = new FileInputStream(file);
+                        DataInputStream dataInputStream = new DataInputStream(inputStream);
+                        int bytes = 0;
+                        byte[] buffer = new byte[1024];
+                        while ((bytes = dataInputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytes);
+                        }
+                        dataOutputStream.write((NEW_LINE).getBytes());
+                        dataInputStream.close();
+
+                    }
+
+                }
+
+            }
+        }
+
+        //后缀
+        dataOutputStream.write((PREFIX + BOUNDARY + PREFIX).getBytes());
+        dataOutputStream.write((NEW_LINE).getBytes());
         dataOutputStream.flush();
         dataOutputStream.close();
     }
