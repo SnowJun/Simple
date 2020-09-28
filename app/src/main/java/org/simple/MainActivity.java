@@ -51,10 +51,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnPostJson;
     private Button btnPostFile;
     private Button btnPostMoreFile;
+    private Button btnPostParasFile;
 
     private Button btnHttpUrlConnection;
     private Button btnOkHttp;
 
+    private boolean isParasAndFile;
     private static final String URL = "http://172.16.30.57:8080/simple/";
 
     @Override
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPostJson = findViewById(R.id.btn_post_json);
         btnPostFile = findViewById(R.id.btn_post_file);
         btnPostMoreFile = findViewById(R.id.btn_post_more_file);
+        btnPostParasFile = findViewById(R.id.btn_post_paras_file);
         btnHttpUrlConnection = findViewById(R.id.btn_httpurlconnection);
         btnOkHttp = findViewById(R.id.btn_okhttp);
         btnGet.setOnClickListener(this);
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPostJson.setOnClickListener(this);
         btnPostFile.setOnClickListener(this);
         btnPostMoreFile.setOnClickListener(this);
+        btnPostParasFile.setOnClickListener(this);
         btnHttpUrlConnection.setOnClickListener(this);
         btnOkHttp.setOnClickListener(this);
     }
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        isParasAndFile = false;
         switch (v.getId()) {
             case R.id.btn_get:
                 doGet();
@@ -103,18 +108,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 doPostJson();
                 break;
             case R.id.btn_okhttp:
-                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP));
+                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP).addHeader("deviceId","ccccccccccc-ddddddddddd"));
                 tvAgency.setText("代理：OkHttp");
                 break;
             case R.id.btn_httpurlconnection:
                 tvAgency.setText("代理：HttpUrlConnection");
-                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION));
+                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd"));
                 break;
             case R.id.btn_post_file:
                 selectFile(1);
                 break;
             case R.id.btn_post_more_file:
                 selectFile(3);
+                break;
+            case R.id.btn_post_paras_file:
+                isParasAndFile = true;
+                selectFile(1);
                 break;
             default:
                 break;
@@ -135,7 +144,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (null != images && images.size() == 1) {
                     ImageItem imageItem = images.get(0);
                     File file = new File(imageItem.path);
-                    uploadFile(file);
+                    if (isParasAndFile) {
+                        uploadFileAndParas(file);
+                    } else {
+                        uploadFile(file);
+                    }
                 } else if (null != images && images.size() > 1) {
                     List<File> files = new ArrayList<>(images.size());
                     for (ImageItem item : images) {
@@ -221,8 +234,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    private void uploadFileAndParas(File file) {
+        SimpleNet.postMulti(URL + "/uploadAndLogin")
+                .addParas("userName","snowjun")
+                .addParas("password","123456").addFile("file",file).excute(new StringCallBack() {
+            @Override
+            public void onSuccess(String result) {
+                tvContent.setText(result);
+            }
+
+            @Override
+            public void onFail(String reason) {
+                SimpleLog.e("onFail：reason->" + reason);
+            }
+
+            @Override
+            public void onException(Exception e) {
+                SimpleLog.e("onException：e->" + e.getMessage());
+            }
+        });
+        tvContent.setText("文件上传中..");
+    }
+
     /**
      * 上传多文件
+     *
      * @param files
      */
     private void uploadFiles(List<File> files) {
@@ -281,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Map<String, String> paras = new HashMap<>();
         paras.put("userName", "snowjun");
         paras.put("password", "123456");
-        SimpleNet.postForm(URL + "/login").paras(paras).excute(new StringCallBack() {
+        SimpleNet.postForm(URL + "/login").addHeader("session","aaaaa-bbbbb").paras(paras).excute(new StringCallBack() {
             @Override
             public void onSuccess(String result) {
                 tvContent.setText(result);

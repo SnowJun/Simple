@@ -396,8 +396,8 @@ public class HttpUrlConnectionProxy implements NetProxy {
                     String string = "Content-Disposition: form-data; " + "name=\""
                             + key +"\""+ NEW_LINE;
                     dataOutputStream.write(string.getBytes());
-                    //两个换行 不然会把body算到header里面  出现大小限制异常
-                    dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
+                    //参数是一个换行 不然会把body算到header里面  出现大小限制异常
+                    dataOutputStream.write((NEW_LINE ).getBytes());
                     dataOutputStream.write(paras.get(key).getBytes());
                     dataOutputStream.write((NEW_LINE).getBytes());
                 }
@@ -416,7 +416,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
                         + "\"" + NEW_LINE;
                 dataOutputStream.write(string.getBytes());
                 dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
-                dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
+                dataOutputStream.write(("Content-Length: " + file.length()+NEW_LINE).getBytes());
                 //两个换行 不然会把body算到header里面  出现大小限制异常
                 dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
 
