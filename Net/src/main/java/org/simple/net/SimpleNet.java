@@ -69,6 +69,9 @@ public class SimpleNet {
         netProxy.setConnectionTimeOut(builder.getConnectionTimeOut());
         netProxy.setReadTimeOut(builder.getReadTimeOut());
         netProxy.setWriteTimeOut(builder.getWriteTimeOut());
+        if (builder.isHttps()){
+            netProxy.https();
+        }
         netProxy.init();
         commonHeaders = builder.getCommonHeaders();
     }

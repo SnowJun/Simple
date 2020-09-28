@@ -5,6 +5,7 @@ import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
+import org.simple.net.https.Https;
 import org.simple.net.request.BodyRequest;
 import org.simple.net.request.MultiRequest;
 import org.simple.net.request.Request;
@@ -38,6 +39,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * org.simple.net.proxy
  *
@@ -66,6 +69,10 @@ public class HttpUrlConnectionProxy implements NetProxy {
     private int retryCount = Constants.RETRY_COUNT;
 
     private List<Request> requests = new ArrayList<>();
+    /**
+     * 是否是http请求
+     */
+    private boolean https;
 
     @Override
     public void retryCount(int count) {
@@ -228,6 +235,11 @@ public class HttpUrlConnectionProxy implements NetProxy {
         }
     }
 
+    @Override
+    public void https() {
+        https = true;
+    }
+
     /**
      * 执行请求
      *
@@ -241,18 +253,33 @@ public class HttpUrlConnectionProxy implements NetProxy {
             url = new URL(request.getUrl());
         } else {
             Map<String, String> paras = request.getParas();
-            StringBuffer sb = new StringBuffer();
-            Set<Map.Entry<String, String>> entrySet = paras.entrySet();
-            for (Map.Entry<String, String> entry : entrySet) {
-                sb.append(entry.getKey())
-                        .append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "utf-8"))
-                        .append("&");
+            if (null != paras) {
+                StringBuffer sb = new StringBuffer();
+                Set<Map.Entry<String, String>> entrySet = paras.entrySet();
+                for (Map.Entry<String, String> entry : entrySet) {
+                    sb.append(entry.getKey())
+                            .append("=")
+                            .append(URLEncoder.encode(entry.getValue(), "utf-8"))
+                            .append("&");
+                }
+                String string = sb.toString();
+                url = new URL(request.getUrl() + "?" + string.substring(0, string.length() - 2));
+            } else {
+                url = new URL(request.getUrl());
             }
-            String string = sb.toString();
-            url = new URL(request.getUrl() + "?" + string.substring(0, string.length() - 2));
         }
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        HttpURLConnection connection = null;
+        if (https) {
+            connection = (HttpURLConnection) url.openConnection();
+            if (https && connection instanceof HttpsURLConnection) {
+                Https https = new Https();
+                Https.HttpsParas paras = https.getHttpsParas();
+                ((HttpsURLConnection) connection).setSSLSocketFactory(paras.getSslSocketFactory());
+                ((HttpsURLConnection) connection).setHostnameVerifier(paras.getTrustAllHost());
+            }
+        } else {
+            connection = (HttpURLConnection) url.openConnection();
+        }
         connection.setConnectTimeout((int) connectionTimeOut);
         connection.setReadTimeout((int) readTimeOut);
         connection.setRequestMethod(request.getMethod().getMethod());
@@ -302,7 +329,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
         if (!connHeaders.isEmpty()) {
             Set<String> keys = connHeaders.keySet();
             for (String key : keys) {
-                response.addHeader(key,connection.getHeaderField(key));
+                response.addHeader(key, connection.getHeaderField(key));
             }
         }
 
@@ -394,10 +421,10 @@ public class HttpUrlConnectionProxy implements NetProxy {
                     dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
                     //这块的name和服务器的入参名字对应起来 name ="file" 服务器的入参名字为file
                     String string = "Content-Disposition: form-data; " + "name=\""
-                            + key +"\""+ NEW_LINE;
+                            + key + "\"" + NEW_LINE;
                     dataOutputStream.write(string.getBytes());
                     //参数是一个换行 不然会把body算到header里面  出现大小限制异常
-                    dataOutputStream.write((NEW_LINE ).getBytes());
+                    dataOutputStream.write((NEW_LINE).getBytes());
                     dataOutputStream.write(paras.get(key).getBytes());
                     dataOutputStream.write((NEW_LINE).getBytes());
                 }
@@ -405,7 +432,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
         }
 
         Set<Map.Entry<String, File>> entrySet = fileMap.entrySet();
-        if (null != fileMap && !fileMap.isEmpty()){
+        if (null != fileMap && !fileMap.isEmpty()) {
             for (Map.Entry<String, File> entry : entrySet) {
                 String key = entry.getKey();
                 File file = entry.getValue();
@@ -416,7 +443,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
                         + "\"" + NEW_LINE;
                 dataOutputStream.write(string.getBytes());
                 dataOutputStream.write(("Content-Type: */*" + NEW_LINE).getBytes());
-                dataOutputStream.write(("Content-Length: " + file.length()+NEW_LINE).getBytes());
+                dataOutputStream.write(("Content-Length: " + file.length()).getBytes());
                 //两个换行 不然会把body算到header里面  出现大小限制异常
                 dataOutputStream.write((NEW_LINE + NEW_LINE).getBytes());
 
@@ -434,11 +461,11 @@ public class HttpUrlConnectionProxy implements NetProxy {
 
 
         Set<Map.Entry<String, List<File>>> entrySet1 = fileListMap.entrySet();
-        if (null != fileListMap && ! fileListMap.isEmpty()){
+        if (null != fileListMap && !fileListMap.isEmpty()) {
             for (Map.Entry<String, List<File>> entry : entrySet1) {
                 String key = entry.getKey();
                 List<File> files = entry.getValue();
-                if (null != files && !files.isEmpty()){
+                if (null != files && !files.isEmpty()) {
                     for (File file : files) {
                         dataOutputStream.write((PREFIX + BOUNDARY + NEW_LINE).getBytes());
                         //这块的name和服务器的入参名字对应起来 name ="files" 服务器的入参名字为files
@@ -533,7 +560,7 @@ public class HttpUrlConnectionProxy implements NetProxy {
      * @return
      */
     private String genParasStr(Map<String, String> paras) {
-        if (paras.isEmpty()) {
+        if (null == paras || paras.isEmpty()) {
             return null;
         }
         StringBuffer sb = new StringBuffer();

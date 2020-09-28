@@ -71,5 +71,9 @@ public interface NetProxy {
      */
     void cancelAll();
 
+    /**
+     * 采用https请求
+     */
+    void https();
 
 }

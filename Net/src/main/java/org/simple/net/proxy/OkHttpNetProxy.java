@@ -4,6 +4,7 @@ import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
+import org.simple.net.https.Https;
 import org.simple.net.request.BodyRequest;
 import org.simple.net.request.Request;
 import org.simple.net.request.body.BodyType;
@@ -155,6 +156,14 @@ public class OkHttpNetProxy implements NetProxy {
         for (Call call : callsQuene) {
             call.cancel();
         }
+    }
+
+    @Override
+    public void https() {
+        Https https = new Https();
+        Https.HttpsParas paras = https.getHttpsParas();
+        builder.sslSocketFactory(paras.getSslSocketFactory(),paras.getX509TrustManager());
+        builder.hostnameVerifier(paras.getTrustAllHost());
     }
 
 

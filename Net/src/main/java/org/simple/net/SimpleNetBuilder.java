@@ -41,6 +41,10 @@ public class SimpleNetBuilder {
      * 公共的请求头
      */
     private Map<String, String> commonHeaders = new HashMap<>();
+    /**
+     * 是否采用https请求
+     */
+    private boolean https;
 
 
     public SimpleNetBuilder setNetAgency(NetAgencyEnum netAgency) {
@@ -79,6 +83,11 @@ public class SimpleNetBuilder {
         return this;
     }
 
+    public SimpleNetBuilder https(){
+        https = true;
+        return this;
+    }
+
     public NetAgencyEnum getNetAgencyEnum() {
         return netAgencyEnum;
     }
@@ -101,5 +110,9 @@ public class SimpleNetBuilder {
 
     public Map<String, String> getCommonHeaders() {
         return commonHeaders;
+    }
+
+    public boolean isHttps() {
+        return https;
     }
 }
