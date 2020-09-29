@@ -27,6 +27,7 @@ public class SimpleNet {
      */
     private NetProxy netProxy;
 
+
     /**
      * 公共请求头
      */
