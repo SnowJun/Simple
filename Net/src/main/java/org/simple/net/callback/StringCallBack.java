@@ -2,7 +2,6 @@ package org.simple.net.callback;
 
 import android.text.TextUtils;
 
-import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.response.Code;
 import org.simple.net.response.Response;
@@ -24,12 +23,12 @@ public abstract class StringCallBack implements NetCallBack<String> {
 
     @Override
     public void parse(final Response response) {
-        int code = response.getCode();
+        final int code = response.getCode();
         if (Code.RESP0NSE_OK != code) {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    onException(NetException.exception(ExceptionCode.CODE_HTTP_EXCEPTION,"http异常："+response.getCode()));
+                    onException(NetException.exception(code,response.getMessage(),"http异常"));
                 }
             });
             return;
@@ -62,7 +61,7 @@ public abstract class StringCallBack implements NetCallBack<String> {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    onException(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, e.getMessage()));
+                    onException(NetException.exception("字符串转换："+ e.getMessage()));
                 }
             });
         } finally {

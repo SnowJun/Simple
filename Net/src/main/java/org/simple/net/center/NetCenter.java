@@ -10,15 +10,15 @@ import java.util.List;
  *
  * @author Simple
  * @date 2020/9/11
- * @desc
- * 网络任务 中心
+ * @desc 网络任务 中心
+ * 暂时闲置
  */
 public class NetCenter {
 
     private List<Request> runningRequests;
 
     public NetCenter() {
-       runningRequests = new ArrayList<>();
+        runningRequests = new ArrayList<>();
     }
 
     public List<Request> getRunningRequests() {
@@ -29,9 +29,15 @@ public class NetCenter {
         this.runningRequests = runningRequests;
     }
 
-    public void addRunningRequests(Request request){
-        if (null != request){
+    public void add(Request request) {
+        if (null != request) {
             runningRequests.add(request);
+        }
+    }
+
+    public void remove(Request request) {
+        if (null != request) {
+            runningRequests.remove(request);
         }
     }
 

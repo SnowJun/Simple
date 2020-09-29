@@ -57,13 +57,14 @@ public class NormalTestActivity extends AppCompatActivity implements View.OnClic
     private Button btnOkHttp;
 
     private boolean isParasAndFile;
-    private static final String URL = "https://172.16.30.57:8085/simple/";
+    private static final String URL = "http://172.16.30.57:8080/simple/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_normal_test);
         initView();
+        SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd").https());
     }
 
 

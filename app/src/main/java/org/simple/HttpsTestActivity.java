@@ -57,13 +57,14 @@ public class HttpsTestActivity extends AppCompatActivity implements View.OnClick
     private Button btnOkHttp;
 
     private boolean isParasAndFile;
-    private static final String URL = "http://172.16.30.57:8080/simple/";
+    private static final String URL = "https://172.16.30.57:8085/simple/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_https_test);
         initView();
+        SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd").https());
     }
 
 
@@ -104,12 +105,12 @@ public class HttpsTestActivity extends AppCompatActivity implements View.OnClick
                 doPostJson();
                 break;
             case R.id.btn_okhttp:
-                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP).addHeader("deviceId","ccccccccccc-ddddddddddd"));
+                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP).addHeader("deviceId","ccccccccccc-ddddddddddd").https());
                 tvAgency.setText("代理：OkHttp");
                 break;
             case R.id.btn_httpurlconnection:
                 tvAgency.setText("代理：HttpUrlConnection");
-                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd"));
+                SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd").https());
                 break;
             case R.id.btn_post_file:
                 selectFile(1);
@@ -333,7 +334,10 @@ public class HttpsTestActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void doGet() {
-        SimpleNet.get("https://www.wanandroid.com/banner/json").excute(new StringCallBack() {
+        Map<String, String> paras = new HashMap<>();
+        paras.put("id", "id111");
+        paras.put("code", "code222");
+        SimpleNet.get(URL+"/info").paras(paras).excute(new StringCallBack() {
             @Override
             public void onSuccess(String result) {
                 tvContent.setText(result);

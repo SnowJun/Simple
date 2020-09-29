@@ -1,6 +1,5 @@
 package org.simple.net.callback;
 
-import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.response.Code;
 import org.simple.net.response.Response;
@@ -36,23 +35,24 @@ public abstract class FileCallBack implements NetCallBack<File> {
 
     @Override
     public void parse(final Response response) {
-        int code = response.getCode();
+        final int code = response.getCode();
         if (Code.RESP0NSE_OK != code) {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    onException(NetException.exception(ExceptionCode.CODE_HTTP_EXCEPTION,"http异常："+response.getCode()));
+                    onException(NetException
+                            .exception(code,response.getMessage(),"http异常"));
                 }
             });
             return;
         }
         try {
             saveFileToLocal(response);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    onException(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "文件解析异常"));
+                    onException(NetException.exception("文件IO异常："+e.getMessage()));
                 }
             });
         }
@@ -107,7 +107,8 @@ public abstract class FileCallBack implements NetCallBack<File> {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, e.getMessage());
+                    NetException
+                            .exception("文件流异常"+ e.getMessage());
                 }
             });
         } finally {

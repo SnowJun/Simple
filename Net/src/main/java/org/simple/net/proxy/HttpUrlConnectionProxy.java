@@ -3,7 +3,6 @@ package org.simple.net.proxy;
 import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
 import org.simple.net.constants.Constants;
-import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.https.Https;
 import org.simple.net.request.BodyRequest;
@@ -127,12 +126,18 @@ public class HttpUrlConnectionProxy implements NetProxy {
                         SimpleLog.e("网络请求已取消");
                         return;
                     }
-                    callBack.onException(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "Url异常：" + e.getMessage()));
+                    callBack.onException(NetException
+                            .exception("Url异常MalformedURLException：" + e.getMessage()));
                 } catch (IOException e) {
                     if (e instanceof SocketTimeoutException) {
                         //超时重试
                         if (request.getRetryCount() > 0) {
                             request.setRetryCount(request.getRetryCount() - 1);
+                        }else {
+                            callBack.onException(NetException
+                                    .exception( "重试失败,多次超时：" + e.getMessage()));
+                            requests.remove(request);
+                            return;
                         }
                         requests.remove(request);
                         if (request.isCanceled()) {
@@ -146,7 +151,8 @@ public class HttpUrlConnectionProxy implements NetProxy {
                             SimpleLog.e("网络请求已取消");
                             return;
                         }
-                        callBack.onException(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "网络超时：" + e.getMessage()));
+                        callBack.onException(NetException
+                                .exception( "网络IO异常：" + e.getMessage()));
                     }
                     e.printStackTrace();
                 }
@@ -173,7 +179,8 @@ public class HttpUrlConnectionProxy implements NetProxy {
             e.printStackTrace();
             Response response = new Response();
             response.setCode(Code.RESP0NSE_EXCEPTION);
-            response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "Url异常：" + e.getMessage()).toString());
+            response.setMessage(NetException
+                    .exception("Url异常MalformedURLException：" + e.getMessage()).toString());
             requests.remove(request);
             if (request.isCanceled()) {
                 SimpleLog.e("网络请求已取消");
@@ -195,7 +202,8 @@ public class HttpUrlConnectionProxy implements NetProxy {
                 } else {
                     Response response = new Response();
                     response.setCode(Code.RESP0NSE_EXCEPTION);
-                    response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "网络超时：" + e.getMessage()).toString());
+                    response.setMessage(NetException
+                            .exception("网络超时：" + e.getMessage()).toString());
                     requests.remove(request);
                     if (request.isCanceled()) {
                         SimpleLog.e("网络请求已取消");
@@ -206,7 +214,8 @@ public class HttpUrlConnectionProxy implements NetProxy {
             } else {
                 Response response = new Response();
                 response.setCode(Code.RESP0NSE_EXCEPTION);
-                response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "IO异常：" + e.getMessage()).toString());
+                response.setMessage(NetException
+                        .exception("网络IO异常：" + e.getMessage()).toString());
                 requests.remove(request);
                 if (request.isCanceled()) {
                     SimpleLog.e("网络请求已取消");

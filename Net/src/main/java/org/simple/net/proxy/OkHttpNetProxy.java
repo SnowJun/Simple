@@ -2,7 +2,6 @@ package org.simple.net.proxy;
 
 import org.simple.net.SimpleNet;
 import org.simple.net.callback.NetCallBack;
-import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.https.Https;
 import org.simple.net.request.BodyRequest;
@@ -85,7 +84,8 @@ public class OkHttpNetProxy implements NetProxy {
             public void onFailure(Call call, IOException e) {
                 if (e instanceof SocketTimeoutException) {
                     if (request.getRetryCount() == 0) {
-                        callBack.onException(NetException.exception(ExceptionCode.CODE_TIME_OUT_EXCEPTION, "网络超时:" + e.getMessage()));
+                        callBack.onException(NetException
+                                .exception("网络超时，多次重试失败:" + e.getMessage()));
                     } else {
                         request.setRetryCount(request.getRetryCount() - 1);
                         genCall(request).enqueue(this);
@@ -122,7 +122,8 @@ public class OkHttpNetProxy implements NetProxy {
         } catch (IOException e) {
             Response response = new Response();
             response.setCode(Code.RESP0NSE_EXCEPTION);
-            response.setMessage(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, "同步执行异常：" + e.getMessage()).toString());
+            response.setMessage(NetException
+                    .exception("同步执行异常：" + e.getMessage()).toString());
             return response;
         }
     }
@@ -162,7 +163,7 @@ public class OkHttpNetProxy implements NetProxy {
     public void https() {
         Https https = new Https();
         Https.HttpsParas paras = https.getHttpsParas();
-        builder.sslSocketFactory(paras.getSslSocketFactory(),paras.getX509TrustManager());
+        builder.sslSocketFactory(paras.getSslSocketFactory(), paras.getX509TrustManager());
         builder.hostnameVerifier(paras.getTrustAllHost());
     }
 
@@ -282,7 +283,7 @@ public class OkHttpNetProxy implements NetProxy {
                         List<File> files = entry.getValue();
                         if (null != files && !files.isEmpty()) {
                             for (File file1 : files) {
-                                requestBodyBuilder.addFormDataPart(entry.getKey(),file1.getName(), RequestBody.create(MediaType.parse("*/*"), file1));
+                                requestBodyBuilder.addFormDataPart(entry.getKey(), file1.getName(), RequestBody.create(MediaType.parse("*/*"), file1));
                             }
                         }
                     }

@@ -3,7 +3,6 @@ package org.simple.net.callback;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import org.simple.net.exception.ExceptionCode;
 import org.simple.net.exception.NetException;
 import org.simple.net.response.Code;
 import org.simple.net.response.Response;
@@ -22,12 +21,13 @@ import java.io.InputStream;
 public abstract class BitmapCallback implements NetCallBack<Bitmap> {
     @Override
     public void parse(final Response response) {
-        int code = response.getCode();
+        final int code = response.getCode();
         if (Code.RESP0NSE_OK != code) {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    onException(NetException.exception(ExceptionCode.CODE_HTTP_EXCEPTION,"http异常："+response.getCode()));
+                    onException(NetException
+                            .exception(code,response.getMessage(),"http异常"));
                 }
             });
             return;
@@ -55,7 +55,8 @@ public abstract class BitmapCallback implements NetCallBack<Bitmap> {
             UIThreadUtil.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    onException(NetException.exception(ExceptionCode.CODE_PARSE_EXCEPTION, e.getMessage()));
+                    onException(NetException
+                            .exception("图片转换异常："+e.getMessage()));
                 }
             });
         } finally {

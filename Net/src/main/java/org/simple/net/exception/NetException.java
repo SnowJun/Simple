@@ -7,36 +7,60 @@ import org.simple.net.util.SimpleLog;
  *
  * @author Simple
  * @date 2020/9/9
- * @desc
- * 网络异常
+ * @desc 网络异常
  */
 public class NetException extends RuntimeException {
+
 
     /**
      * 异常码
      */
-    private int code;
+    private int httpCode;
+    private String httpMessage;
+    private String message;
 
-    private NetException(String message, int code) {
+    private NetException(String message) {
         super(message);
-        this.code = code;
+        this.message = message;
     }
+
+    public NetException(String message, int httpCode, String httpMessage) {
+        super(message);
+        this.httpCode = httpCode;
+        this.httpMessage = httpMessage;
+        this.message = message;
+    }
+
 
     /**
      * 抛出异常
-     * @param code
-     * @param msg
+     * @param msg 异常信息
      * @return
      */
-    public static NetException exception(int code,String msg){
-        SimpleLog.e("抛出异常：code->"+code+"  msg->"+msg);
-        return new NetException(msg,code);
+    public static NetException exception( String msg) {
+        SimpleLog.e("抛出异常： msg->" + msg);
+        return new NetException(msg);
     }
 
+    /**
+     * 抛出http异常
+     * @param httpCode http码
+     * @param httpMessage http信息
+     * @param msg 异常信息
+     * @return
+     */
+    public static NetException exception(int httpCode, String httpMessage, String msg) {
+        SimpleLog.e("抛出异常： httpCode->" + httpCode+"\nhttpMessage->"+httpMessage+"\nmsg->"+msg);
+        return new NetException(msg,httpCode,httpMessage);
+    }
 
     @Override
     public String toString() {
         return "NetException{" +
-                "code=" + code + "msg" + getMessage() +'}';
+                "httpCode=" + httpCode +
+                ", httpMessage='" + httpMessage + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
+
 }
