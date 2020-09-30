@@ -2,6 +2,8 @@
 
 [![](https://jitpack.io/v/SnowJun/Simple.svg)](https://jitpack.io/#SnowJun/Simple)
 
+#### 博客地址
+[撸一个开源库](https://blog.csdn.net/jinjin10086/article/details/108880169)
 #### 网络库介绍
 ##### 库名及功能：
  	Simple的子库Net库，支持httpurlconnection和okhttp两种代理实现
