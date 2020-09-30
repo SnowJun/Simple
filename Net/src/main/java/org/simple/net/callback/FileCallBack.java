@@ -66,7 +66,7 @@ public abstract class FileCallBack implements NetCallBack<File> {
      * @param current  当前下载大小
      * @param size     总共大小
      */
-    abstract void onProgress(int progress, long current, long size);
+    public abstract void onProgress(int progress, long current, long size);
 
     private void saveFileToLocal(Response response) throws Exception {
         if (null == response || null == response.getBody() || null == response.getBody().getInputStreamData()) {
