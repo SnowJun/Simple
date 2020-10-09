@@ -1,4 +1,4 @@
-package org.simple;
+package org.simple.net;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,8 +20,8 @@ import com.lzy.imagepicker.ui.ImageGridActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.simple.net.SimpleNet;
-import org.simple.net.SimpleNetBuilder;
+import org.simple.R;
+import org.simple.SimpleLog;
 import org.simple.net.angency.NetAgencyEnum;
 import org.simple.net.callback.StringCallBack;
 import org.simple.net.request.MultiRequest;
@@ -62,23 +62,23 @@ public class HttpsTestActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_https_test);
+        setContentView(org.simple.R.layout.activity_https_test);
         initView();
         SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd").https());
     }
 
 
     private void initView() {
-        tvContent = findViewById(R.id.tv_content);
-        tvAgency = findViewById(R.id.tv_agency);
-        btnGet = findViewById(R.id.btn_get);
-        btnPostParas = findViewById(R.id.btn_post_paras);
-        btnPostJson = findViewById(R.id.btn_post_json);
-        btnPostFile = findViewById(R.id.btn_post_file);
-        btnPostMoreFile = findViewById(R.id.btn_post_more_file);
-        btnPostParasFile = findViewById(R.id.btn_post_paras_file);
-        btnHttpUrlConnection = findViewById(R.id.btn_httpurlconnection);
-        btnOkHttp = findViewById(R.id.btn_okhttp);
+        tvContent = findViewById(org.simple.R.id.tv_content);
+        tvAgency = findViewById(org.simple.R.id.tv_agency);
+        btnGet = findViewById(org.simple.R.id.btn_get);
+        btnPostParas = findViewById(org.simple.R.id.btn_post_paras);
+        btnPostJson = findViewById(org.simple.R.id.btn_post_json);
+        btnPostFile = findViewById(org.simple.R.id.btn_post_file);
+        btnPostMoreFile = findViewById(org.simple.R.id.btn_post_more_file);
+        btnPostParasFile = findViewById(org.simple.R.id.btn_post_paras_file);
+        btnHttpUrlConnection = findViewById(org.simple.R.id.btn_httpurlconnection);
+        btnOkHttp = findViewById(org.simple.R.id.btn_okhttp);
         btnGet.setOnClickListener(this);
         btnPostParas.setOnClickListener(this);
         btnPostJson.setOnClickListener(this);
@@ -95,27 +95,27 @@ public class HttpsTestActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         isParasAndFile = false;
         switch (v.getId()) {
-            case R.id.btn_get:
+            case org.simple.R.id.btn_get:
                 doGet();
                 break;
-            case R.id.btn_post_paras:
+            case org.simple.R.id.btn_post_paras:
                 doPostParas();
                 break;
-            case R.id.btn_post_json:
+            case org.simple.R.id.btn_post_json:
                 doPostJson();
                 break;
-            case R.id.btn_okhttp:
+            case org.simple.R.id.btn_okhttp:
                 SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_OKHTTP).addHeader("deviceId","ccccccccccc-ddddddddddd").https());
                 tvAgency.setText("代理：OkHttp");
                 break;
-            case R.id.btn_httpurlconnection:
+            case org.simple.R.id.btn_httpurlconnection:
                 tvAgency.setText("代理：HttpUrlConnection");
                 SimpleNet.getInstance().init(new SimpleNetBuilder().setNetAgency(NetAgencyEnum.AGENCY_HTTPURLCONNECTION).addHeader("deviceId","aaaaaaaaaaaaa-ddddddddddd").https());
                 break;
-            case R.id.btn_post_file:
+            case org.simple.R.id.btn_post_file:
                 selectFile(1);
                 break;
-            case R.id.btn_post_more_file:
+            case org.simple.R.id.btn_post_more_file:
                 selectFile(3);
                 break;
             case R.id.btn_post_paras_file:
