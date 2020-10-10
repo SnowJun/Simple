@@ -225,4 +225,16 @@ SimpleNetBuilder builder = new SimpleNetBuilder();
             }
         });
 ```
+##### 混淆规则
+
+-dontwarn org.simple.net.**
+-keep class org.simple.net.**{*;}
+
+okhttp
+-dontwarn okhttp3.**
+-keep class okhttp3.**{*;}
+
+okio
+-dontwarn okio.**
+-keep class okio.**{*;}
 
