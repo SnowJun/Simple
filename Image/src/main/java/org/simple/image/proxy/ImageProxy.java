@@ -50,12 +50,24 @@ public interface ImageProxy<R extends ImageProxy<R>> {
      * @param radius
      * @return
      */
-    R roundCorner(float radius);
+    R roundCorner(int radius);
 
     /**
      * 圆形裁剪
      * @return
      */
     R circle();
+
+    /**
+     * 跳过内存缓存
+     * @return
+     */
+    R skipCacheMemory();
+
+    /**
+     * 跳过磁盘缓存
+     * @return
+     */
+    R skipCacheDisk();
 
 }

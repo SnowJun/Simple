@@ -30,7 +30,7 @@ public class SimpleImageBuilder {
     private Context context;
     private ImageProxyEnum proxy = Constants.PROXY;
 
-    public SimpleImageBuilder setProxy(ImageProxyEnum proxy){
+    public SimpleImageBuilder setProxy(ImageProxyEnum proxy) {
         this.proxy = proxy;
         return this;
     }
@@ -55,29 +55,29 @@ public class SimpleImageBuilder {
         return this;
     }
 
-    public SimpleImageBuilder initFresco(Context context){
+    public SimpleImageBuilder initFresco(Context context) {
         initFresco = true;
         this.context = context;
         return this;
     }
 
-    boolean isCacheMemory() {
+    public boolean isCacheMemory() {
         return isCacheMemory;
     }
 
-    boolean isCacheDisk() {
+    public boolean isCacheDisk() {
         return isCacheDisk;
     }
 
-    Context context(){
+    public Context context() {
         return context;
     }
 
-    boolean isInitFresco(){
+    public boolean isInitFresco() {
         return initFresco;
     }
 
-    ImageProxyEnum getProxy(){
+    public ImageProxyEnum getProxy() {
         return proxy;
     }
 

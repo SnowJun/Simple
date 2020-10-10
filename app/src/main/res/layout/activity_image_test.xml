@@ -2,14 +2,131 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/tv_agency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="代理：Glide"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btn_fresco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Fresco"
+            android:textAllCaps="false"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/btn_glide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Glide"
+            android:textAllCaps="false"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/btn_picasso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Picasso"
+            android:textAllCaps="false"
+            android:textSize="16dp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_operate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="操作：普通"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btn_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="普通"
+            android:textAllCaps="false"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/btn_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="圆形"
+            android:textAllCaps="false"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/btn_round"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="圆角"
+            android:textAllCaps="false"
+            android:textSize="16dp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/sv_test"
-        android:layout_margin="10dp"
-        android:layout_width="150dp"
-        android:layout_height="150dp" />
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_margin="10dp" />
 
+    <ImageView
+        android:id="@+id/iv_test"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:layout_margin="10dp" />
 
 </LinearLayout>

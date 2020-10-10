@@ -26,8 +26,7 @@ public class App extends Application {
 
     private void initSimpleImage() {
         SimpleImageBuilder simpleImageBuilder = new SimpleImageBuilder().initFresco(this)
-                .setProxy(ImageProxyEnum.AGENCY_FRESCO)
-                ;
+                .setProxy(ImageProxyEnum.AGENCY_PICASSO);
         SimpleImage.getInstance().init(simpleImageBuilder);
     }
 

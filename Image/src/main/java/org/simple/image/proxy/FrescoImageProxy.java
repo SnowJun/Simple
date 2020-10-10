@@ -4,10 +4,14 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.core.ImagePipeline;
 
+import org.simple.image.SimpleImage;
+import org.simple.image.SimpleImageBuilder;
 import org.simple.image.SimpleLog;
 
 import java.io.File;
@@ -38,6 +42,15 @@ public class FrescoImageProxy implements ImageProxy<FrescoImageProxy> {
      * 资源res
      */
     private int res = -1;
+
+    /**
+     * 跳过内存缓存
+     */
+    private boolean isSkipMemory;
+    /**
+     * 跳过磁盘缓存
+     */
+    private boolean isSkipDisk;
 
     @Override
     public FrescoImageProxy load(String url) {
@@ -70,7 +83,7 @@ public class FrescoImageProxy implements ImageProxy<FrescoImageProxy> {
     }
 
     @Override
-    public FrescoImageProxy roundCorner(float radius) {
+    public FrescoImageProxy roundCorner(int radius) {
         hierarchy.setRoundingParams(new RoundingParams().setCornersRadius(radius));
         return this;
     }
@@ -78,6 +91,18 @@ public class FrescoImageProxy implements ImageProxy<FrescoImageProxy> {
     @Override
     public FrescoImageProxy circle() {
         hierarchy.setRoundingParams(new RoundingParams().setRoundAsCircle(true));
+        return this;
+    }
+
+    @Override
+    public FrescoImageProxy skipCacheMemory() {
+        isSkipMemory = true;
+        return this;
+    }
+
+    @Override
+    public FrescoImageProxy skipCacheDisk() {
+        isSkipDisk = true;
         return this;
     }
 
@@ -104,6 +129,18 @@ public class FrescoImageProxy implements ImageProxy<FrescoImageProxy> {
         if (null == uri){
             SimpleLog.e("请先初始化uri，设置加载的url或者file");
             return;
+        }
+        SimpleImageBuilder builder = SimpleImage.getInstance().getBuilder();
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        if (isSkipMemory){
+            imagePipeline.evictFromMemoryCache(uri);
+        }else if (!builder.isCacheMemory()){
+            imagePipeline.evictFromMemoryCache(uri);
+        }
+        if (isSkipDisk){
+            imagePipeline.evictFromDiskCache(uri);
+        }else if (!builder.isCacheDisk()){
+            imagePipeline.evictFromDiskCache(uri);
         }
         view.setImageURI(uri);
     }
