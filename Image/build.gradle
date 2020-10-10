@@ -29,15 +29,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     //fresco库
-    api 'com.facebook.fresco:fresco:2.3.0'
+    compileOnly 'com.facebook.fresco:fresco:2.3.0'
     //支持gif
-    api 'com.facebook.fresco:animated-gif:2.3.0'
+    compileOnly 'com.facebook.fresco:animated-gif:2.3.0'
 
     //glide
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    compileOnly 'com.github.bumptech.glide:glide:4.11.0'
+//    buildAnnotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     //picasso
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    compileOnly 'com.squareup.picasso:picasso:2.71828'
 
 }

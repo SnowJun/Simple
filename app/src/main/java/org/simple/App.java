@@ -6,7 +6,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 
 import org.simple.image.SimpleImage;
 import org.simple.image.SimpleImageBuilder;
-import org.simple.image.agency.ImageProxyEnum;
 
 /**
  * org.simple
@@ -25,8 +24,7 @@ public class App extends Application {
     }
 
     private void initSimpleImage() {
-        SimpleImageBuilder simpleImageBuilder = new SimpleImageBuilder().initFresco(this)
-                .setProxy(ImageProxyEnum.AGENCY_PICASSO);
+        SimpleImageBuilder simpleImageBuilder = new SimpleImageBuilder();
         SimpleImage.getInstance().init(simpleImageBuilder);
     }
 
