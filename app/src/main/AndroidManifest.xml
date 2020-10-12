@@ -23,6 +23,9 @@
         <activity android:name=".net.NormalTestActivity"/>
         <activity android:name=".net.HttpsTestActivity"/>
         <activity android:name=".image.ImageTestActivity"/>
+        <activity android:name=".util.UtilTestActivity"/>
+        <activity android:name=".util.SPUtilTestActivity"/>
+
     </application>
 
 </manifest>

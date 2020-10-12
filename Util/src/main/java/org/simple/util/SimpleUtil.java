@@ -1,5 +1,7 @@
 package org.simple.util;
 
+import org.simple.util.util.SPUtil;
+
 /**
  * org.simple.util
  *
@@ -8,4 +10,15 @@ package org.simple.util;
  * @desc
  */
 public class SimpleUtil {
+
+
+    /**
+     * 获取SPUtil类
+     * @return
+     */
+    public static SPUtil getSPUtil() {
+        return SPUtil.getInstance();
+    }
+
+
 }

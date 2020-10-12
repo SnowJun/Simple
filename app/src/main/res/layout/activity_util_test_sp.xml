@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <Button
+        android:id="@+id/btn_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="全部清除"
+        android:textAllCaps="false" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_save_int"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="存储Int：10"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_int"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取Int"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_int"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_save_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="存储Long：100"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取Long"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_save_float"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="存储Float：1.5"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_float"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取Float"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_float"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_save_boolean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="存储Boolean：true"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_boolean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取Boolean"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_boolean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_save_string"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="存储String：nick"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_string"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取String"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_string"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_save_string_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="存储String Set：nick,age"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_string_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取String Set"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_string_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_add_string_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="增加String Set：birthday"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_string_set1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取String Set"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_string_set1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/btn_remove_string_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="移除String Set：age"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_get_string_set2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取String Set"
+            android:textAllCaps="false" />
+
+
+        <TextView
+            android:id="@+id/tv_result_string_set2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

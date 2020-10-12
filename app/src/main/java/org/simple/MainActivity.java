@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.simple.image.ImageTestActivity;
 import org.simple.net.HttpsTestActivity;
 import org.simple.net.NormalTestActivity;
+import org.simple.util.UtilTestActivity;
 
 /**
  * org.simple
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnNormal;
     private Button btnHttps;
     private Button btnImage;
+    private Button btnUtil;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,17 +36,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView() {
-     btnNormal = findViewById(R.id.btn_normal);
-     btnHttps = findViewById(R.id.btn_https);
-     btnImage = findViewById(R.id.btn_image);
-     btnNormal.setOnClickListener(this);
-     btnHttps.setOnClickListener(this);
-     btnImage.setOnClickListener(this);
+        btnNormal = findViewById(R.id.btn_normal);
+        btnHttps = findViewById(R.id.btn_https);
+        btnImage = findViewById(R.id.btn_image);
+        btnUtil = findViewById(R.id.btn_util);
+        btnNormal.setOnClickListener(this);
+        btnHttps.setOnClickListener(this);
+        btnImage.setOnClickListener(this);
+        btnUtil.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_normal:
                 toNormalTest();
                 break;
@@ -54,9 +58,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_image:
                 toImageTest();
                 break;
+            case R.id.btn_util:
+               toUtilTest();
+                break;
             default:
                 break;
         }
+    }
+
+    private void toUtilTest() {
+        Intent intent = new Intent(this, UtilTestActivity.class);
+        startActivity(intent);
     }
 
     private void toImageTest() {
