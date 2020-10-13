@@ -25,6 +25,8 @@
         <activity android:name=".image.ImageTestActivity"/>
         <activity android:name=".util.UtilTestActivity"/>
         <activity android:name=".util.SPUtilTestActivity"/>
+        <activity android:name=".util.TaskManagerTestActivity" />
+        <activity android:name=".util.PhoneInfoTestActivity" />
 
     </application>
 

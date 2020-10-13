@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="普通任务" />
+
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="现象:" />
+
+
+    <Button
+        android:id="@+id/btn_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="执行任务" />
+
+    <Button
+        android:id="@+id/btn_task_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="执行任务可取消（有阻塞）" />
+
+    <Button
+        android:id="@+id/btn_task_cancel1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="执行任务可取消（无阻塞）" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="延时任务" />
+
+
+    <TextView
+        android:id="@+id/tv_info_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="延时任务现象：" />
+
+    <Button
+        android:id="@+id/btn_task_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="延时10s执行任务" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="周期任务" />
+
+
+    <TextView
+        android:id="@+id/tv_info_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="周期任务现象：" />
+
+    <Button
+        android:id="@+id/btn_task_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="周期执行任务1s" />
+
+
+    <Button
+        android:id="@+id/btn_task_rate_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="停止周期任务" />
+
+</LinearLayout>

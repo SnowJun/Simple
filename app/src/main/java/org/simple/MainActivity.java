@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 toImageTest();
                 break;
             case R.id.btn_util:
-               toUtilTest();
+                toUtilTest();
                 break;
             default:
                 break;

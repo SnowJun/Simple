@@ -15,4 +15,21 @@
         android:textAllCaps="false" />
 
 
+    <Button
+        android:id="@+id/btn_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="任务测试"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="手机信息"
+        android:textAllCaps="false" />
+
+
 </LinearLayout>

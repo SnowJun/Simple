@@ -20,6 +20,8 @@ import org.simple.R;
 public class UtilTestActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button btnSp;
+    private Button btnTask;
+    private Button btnPhone;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,7 +32,11 @@ public class UtilTestActivity extends AppCompatActivity implements View.OnClickL
 
     private void initView() {
         btnSp = findViewById(R.id.btn_sp);
+        btnTask = findViewById(R.id.btn_task);
+        btnPhone = findViewById(R.id.btn_phone);
         btnSp.setOnClickListener(this);
+        btnTask.setOnClickListener(this);
+        btnPhone.setOnClickListener(this);
     }
 
     @Override
@@ -39,9 +45,25 @@ public class UtilTestActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_sp:
                 toSpUtilTest();
                 break;
+            case R.id.btn_task:
+                toTaskTest();
+                break;
+            case R.id.btn_phone:
+                toPhoneTest();
+                break;
             default:
                 break;
         }
+    }
+
+    private void toPhoneTest() {
+        Intent intent = new Intent(this,PhoneInfoTestActivity.class);
+        startActivity(intent);
+    }
+
+    private void toTaskTest() {
+        Intent intent = new Intent(this,TaskManagerTestActivity.class);
+        startActivity(intent);
     }
 
     private void toSpUtilTest() {
