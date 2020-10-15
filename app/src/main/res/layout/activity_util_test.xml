@@ -32,4 +32,29 @@
         android:textAllCaps="false" />
 
 
+    <Button
+        android:id="@+id/btn_decimal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="精确运算及格式化"
+        android:textAllCaps="false" />
+
+
+    <Button
+        android:id="@+id/btn_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="时间工具"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="文件工具"
+        android:textAllCaps="false" />
+
 </LinearLayout>

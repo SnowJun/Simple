@@ -22,7 +22,6 @@ public class PhoneInfoTestActivity extends AppCompatActivity {
 
     private TextView tvInfo;
     private ImageView ivIcon;
-    private ImageView ivLogo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,20 +52,13 @@ public class PhoneInfoTestActivity extends AppCompatActivity {
         buffer.append("app版本名称：" + SimpleUtil.getAppUtil().getVersionName(this) + "\n");
         buffer.append("app包名：" + SimpleUtil.getAppUtil().getPackageName(this) + "\n");
         buffer.append("app名称：" + SimpleUtil.getAppUtil().getAppName(this) + "\n");
-        buffer.append("app描述：" + SimpleUtil.getAppUtil().getAppDescription(this) + "\n");
         tvInfo.setText(buffer.toString());
 
         Drawable icon = SimpleUtil.getAppUtil().getAppIcon(this);
-        Drawable logo = SimpleUtil.getAppUtil().getAppLogo(this);
         if (null != icon ){
             ivIcon.setImageDrawable(icon);
         }else {
             SimpleLog.d("icon 为null");
-        }
-        if (null != logo){
-            ivLogo.setImageDrawable(logo);
-        }else {
-            SimpleLog.d("logo 为null");
         }
 
     }
@@ -74,7 +66,6 @@ public class PhoneInfoTestActivity extends AppCompatActivity {
     private void initView() {
         tvInfo = findViewById(R.id.tv_info);
         ivIcon = findViewById(R.id.iv_icon);
-        ivLogo = findViewById(R.id.iv_logo);
     }
 
 

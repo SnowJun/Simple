@@ -27,6 +27,9 @@
         <activity android:name=".util.SPUtilTestActivity"/>
         <activity android:name=".util.TaskManagerTestActivity" />
         <activity android:name=".util.PhoneInfoTestActivity" />
+        <activity android:name=".util.DecimalUtilTestActivity" />
+        <activity android:name=".util.TimeUtilTestActivity" />
+        <activity android:name=".util.FileUtilTestActivity" />
 
     </application>
 

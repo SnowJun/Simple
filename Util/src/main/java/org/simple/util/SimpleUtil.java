@@ -1,13 +1,18 @@
 package org.simple.util;
 
+import android.content.Context;
+
 import org.simple.util.util.AppUtil;
+import org.simple.util.util.DecimalUtil;
 import org.simple.util.util.DeviceUtil;
+import org.simple.util.util.FileUtil;
 import org.simple.util.util.NullUtil;
 import org.simple.util.util.PixelUtil;
 import org.simple.util.util.SPUtil;
 import org.simple.util.util.StringUtil;
 import org.simple.util.util.TaskManager;
 import org.simple.util.util.ThreadPoster;
+import org.simple.util.util.TimeUtil;
 
 /**
  * org.simple.util
@@ -90,5 +95,28 @@ public class SimpleUtil {
         return new AppUtil();
     }
 
+    /**
+     * 获取时间工具
+     * @return
+     */
+    public static TimeUtil getTimeUtil(){
+        return new TimeUtil();
+    }
+
+    /**
+     * 获取精确计算及格式化工具
+     * @return
+     */
+    public static DecimalUtil getDecimalUtil(){
+        return new DecimalUtil();
+    }
+
+    /**
+     * 获取文件工具
+     * @return
+     */
+    public static FileUtil getFileUtil(Context context){
+        return new FileUtil(context);
+    }
 
 }

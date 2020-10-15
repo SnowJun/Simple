@@ -110,30 +110,5 @@ public class AppUtil {
         return null;
     }
 
-    public Drawable getAppLogo(Context context) {
-        PackageManager manager = context.getPackageManager();
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = manager.getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.applicationInfo.loadLogo(manager);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    public String getAppDescription(Context context) {
-        PackageManager manager = context.getPackageManager();
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = manager.getPackageInfo(context.getPackageName(), 0);
-            CharSequence charSequence = packageInfo.applicationInfo.loadDescription(manager);
-            return null == charSequence ? "" : charSequence.toString();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
 }
