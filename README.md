@@ -2,6 +2,10 @@
 
 [![](https://jitpack.io/v/SnowJun/Simple.svg)](https://jitpack.io/#SnowJun/Simple)
 
+#### 前言
+    自己撸的代码，可以欢迎研讨学习与交流，
+    Demo经过了简单的调试，如果自己使用过觉得没问题，
+    可以应用，遇到问题欢迎讨论交流。
 #### 博客地址
 [撸一个开源库](https://blog.csdn.net/jinjin10086/article/details/108880169)
 #### 网络库介绍
