@@ -30,6 +30,7 @@
         <activity android:name=".util.DecimalUtilTestActivity" />
         <activity android:name=".util.TimeUtilTestActivity" />
         <activity android:name=".util.FileUtilTestActivity" />
+        <activity android:name=".util.NotifyUtilTestActivity" />
 
     </application>
 

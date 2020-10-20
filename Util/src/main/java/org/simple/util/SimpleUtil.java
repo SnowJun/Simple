@@ -6,6 +6,7 @@ import org.simple.util.util.AppUtil;
 import org.simple.util.util.DecimalUtil;
 import org.simple.util.util.DeviceUtil;
 import org.simple.util.util.FileUtil;
+import org.simple.util.util.NotificationUtil;
 import org.simple.util.util.NullUtil;
 import org.simple.util.util.PixelUtil;
 import org.simple.util.util.SPUtil;
@@ -20,6 +21,9 @@ import org.simple.util.util.TimeUtil;
  * @author Simple
  * @date 2020/9/9
  * @desc
+ *
+
+ *
  */
 public class SimpleUtil {
 
@@ -118,5 +122,14 @@ public class SimpleUtil {
     public static FileUtil getFileUtil(Context context){
         return new FileUtil(context);
     }
+
+    /**
+     * 获取通知工具
+     * @return
+     */
+    public static NotificationUtil getNotificationUtil(){
+        return NotificationUtil.getInstance();
+    }
+
 
 }

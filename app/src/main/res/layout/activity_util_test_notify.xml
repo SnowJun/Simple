@@ -6,64 +6,50 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <Button
-        android:id="@+id/btn_sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="SP测试"
-        android:textAllCaps="false" />
-
 
     <Button
-        android:id="@+id/btn_task"
+        android:id="@+id/btn_normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="任务测试"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_phone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="手机信息"
-        android:textAllCaps="false" />
-
-
-    <Button
-        android:id="@+id/btn_decimal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="精确运算及格式化"
-        android:textAllCaps="false" />
-
-
-    <Button
-        android:id="@+id/btn_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="时间工具"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_file"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="文件工具"
-        android:textAllCaps="false" />
+        android:text="普通通知" />
 
     <Button
         android:id="@+id/btn_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="通知工具"
-        android:textAllCaps="false" />
+        android:text="带提示通知" />
+
+    <Button
+        android:id="@+id/btn_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="带进度通知" />
+
+    <Button
+        android:id="@+id/btn_own"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="自定义通知" />
+
+
+    <Button
+        android:id="@+id/btn_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="发送通知" />
+
+    <Button
+        android:id="@+id/btn_delay_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="取消通知" />
+
+
+    <Button
+        android:id="@+id/btn_all_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="取消所有" />
 
 
 </LinearLayout>

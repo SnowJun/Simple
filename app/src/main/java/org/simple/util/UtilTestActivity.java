@@ -25,6 +25,7 @@ public class UtilTestActivity extends AppCompatActivity implements View.OnClickL
     private Button btnDecimal;
     private Button btnTime;
     private Button btnFile;
+    private Button btnNotify;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,12 +41,14 @@ public class UtilTestActivity extends AppCompatActivity implements View.OnClickL
         btnDecimal = findViewById(R.id.btn_decimal);
         btnTime = findViewById(R.id.btn_time);
         btnFile = findViewById(R.id.btn_file);
+        btnNotify = findViewById(R.id.btn_notify);
         btnSp.setOnClickListener(this);
         btnTask.setOnClickListener(this);
         btnPhone.setOnClickListener(this);
         btnDecimal.setOnClickListener(this);
         btnTime.setOnClickListener(this);
         btnFile.setOnClickListener(this);
+        btnNotify.setOnClickListener(this);
     }
 
     @Override
@@ -69,9 +72,17 @@ public class UtilTestActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_file:
                 toFileTest();
                 break;
+            case R.id.btn_notify:
+                toNotifyActivity();
+                break;
             default:
                 break;
         }
+    }
+
+    private void toNotifyActivity() {
+        Intent intent = new Intent(this, NotifyUtilTestActivity.class);
+        startActivity(intent);
     }
 
     private void toFileTest() {

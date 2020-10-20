@@ -6,6 +6,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 
 import org.simple.image.SimpleImage;
 import org.simple.image.SimpleImageBuilder;
+import org.simple.util.SimpleUtil;
 
 /**
  * org.simple
@@ -21,6 +22,7 @@ public class App extends Application {
         super.onCreate();
         Fresco.initialize(this);
         initSimpleImage();
+        SimpleUtil.getNotificationUtil().init(this);
     }
 
     private void initSimpleImage() {
