@@ -1,5 +1,6 @@
 package org.simple;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,10 +9,18 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Rationale;
+import com.yanzhenjie.permission.RequestExecutor;
+import com.yanzhenjie.permission.runtime.Permission;
+
 import org.simple.image.ImageTestActivity;
 import org.simple.net.HttpsTestActivity;
 import org.simple.net.NormalTestActivity;
 import org.simple.util.UtilTestActivity;
+
+import java.util.List;
 
 /**
  * org.simple
@@ -44,6 +53,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnHttps.setOnClickListener(this);
         btnImage.setOnClickListener(this);
         btnUtil.setOnClickListener(this);
+
+        AndPermission.with(this).runtime().permission(Permission.READ_EXTERNAL_STORAGE)
+                .onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> data) {
+
+                    }
+                })
+                .onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> data) {
+
+                    }
+                })
+                .rationale(new Rationale<List<String>>() {
+                    @Override
+                    public void showRationale(Context context, List<String> data, RequestExecutor executor) {
+
+                    }
+                }).start();
+
     }
 
     @Override
@@ -85,5 +115,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(this, NormalTestActivity.class);
         startActivity(intent);
     }
+
 
 }
