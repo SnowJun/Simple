@@ -1,6 +1,5 @@
 package org.simple.util;
 
-import android.app.Activity;
 import android.content.Context;
 
 import org.simple.util.util.AppUtil;
@@ -140,11 +139,9 @@ public class SimpleUtil {
 
     /**
      * 获取权限工具
-     *
-     * @param activity
      * @return
      */
-    public static PermissionPort getPermissionUtil(Activity activity) {
+    public static PermissionPort getPermissionUtil() {
         return PermissionPort.getInstance();
     }
 

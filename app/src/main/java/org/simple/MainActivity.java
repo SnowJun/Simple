@@ -1,6 +1,6 @@
 package org.simple;
 
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,16 +9,12 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.yanzhenjie.permission.Action;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.Rationale;
-import com.yanzhenjie.permission.RequestExecutor;
-import com.yanzhenjie.permission.runtime.Permission;
-
 import org.simple.image.ImageTestActivity;
 import org.simple.net.HttpsTestActivity;
 import org.simple.net.NormalTestActivity;
+import org.simple.util.SimpleUtil;
 import org.simple.util.UtilTestActivity;
+import org.simple.util.util.PermissionPort;
 
 import java.util.List;
 
@@ -54,25 +50,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnImage.setOnClickListener(this);
         btnUtil.setOnClickListener(this);
 
-        AndPermission.with(this).runtime().permission(Permission.READ_EXTERNAL_STORAGE)
-                .onGranted(new Action<List<String>>() {
-                    @Override
-                    public void onAction(List<String> data) {
 
-                    }
-                })
-                .onDenied(new Action<List<String>>() {
-                    @Override
-                    public void onAction(List<String> data) {
+        SimpleUtil.getPermissionUtil().requestPermission(this, new PermissionPort.PermissionCallBack() {
+            @Override
+            public void success() {
+                SimpleLog.d("请求权限成功");
+            }
 
-                    }
-                })
-                .rationale(new Rationale<List<String>>() {
-                    @Override
-                    public void showRationale(Context context, List<String> data, RequestExecutor executor) {
+            @Override
+            public void define(List<String> definePermissions) {
+                for (String string : definePermissions) {
+                    SimpleLog.e("请求权限失败：" + string);
+                }
+            }
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-                    }
-                }).start();
+//        AndPermission.with(this).runtime().permission(Permission.READ_EXTERNAL_STORAGE)
+//                .onGranted(new Action<List<String>>() {
+//                    @Override
+//                    public void onAction(List<String> data) {
+//
+//                    }
+//                })
+//                .onDenied(new Action<List<String>>() {
+//                    @Override
+//                    public void onAction(List<String> data) {
+//
+//                    }
+//                })
+//                .rationale(new Rationale<List<String>>() {
+//                    @Override
+//                    public void showRationale(Context context, List<String> data, RequestExecutor executor) {
+//
+//                    }
+//                }).start();
 
     }
 
