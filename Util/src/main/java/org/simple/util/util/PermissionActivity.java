@@ -1,16 +1,21 @@
 package org.simple.util.util;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,6 +33,8 @@ public class PermissionActivity extends Activity {
 
     private List<String> grantPermissions;
     private List<String> definePermissions;
+    List<String> rationalePermissions;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +43,7 @@ public class PermissionActivity extends Activity {
         callBack = PermissionPort.getInstance().getCallBack();
         grantPermissions = new ArrayList<>();
         definePermissions = new ArrayList<>();
+        rationalePermissions = new ArrayList<>();
         permission();
     }
 
@@ -51,7 +59,7 @@ public class PermissionActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PermissionUtil.REQUEST_SETTING_CODE){
+        if (requestCode == PermissionUtil.REQUEST_SETTING_CODE) {
             List<String> permissions = new ArrayList<>();
             for (String permission : this.permissions) {
                 if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(this, permission)) {
@@ -64,7 +72,25 @@ public class PermissionActivity extends Activity {
             } else {
                 callBack.success();
             }
+            finish();
         }
+    }
+
+
+    private void toAppSetting() {
+        PackageManager manager = this.getPackageManager();
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = manager.getPackageInfo(this.getPackageName(), 0);
+
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + packageInfo.packageName));
+            this.startActivityForResult(intent, PermissionUtil.REQUEST_SETTING_CODE);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override
@@ -72,24 +98,45 @@ public class PermissionActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PermissionUtil.REQUEST_CODE) {
             //权限请求码
-            if (grantResults.length > 0) {
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        grantPermissions.add(permissions[i]);
-                    } else {
-                        definePermissions.add(permissions[i]);
+            for (int i = 0; i < grantResults.length; i++) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    grantPermissions.add(permissions[i]);
+                } else {
+                    definePermissions.add(permissions[i]);
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
+                        rationalePermissions.add(permissions[i]);
                     }
                 }
+            }
+            if (rationalePermissions.size() > 0) {
+                //显示提示
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("权限");
+                builder.setMessage("应用运行需要的权限");
+                builder.setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        toAppSetting();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        callBack.define(definePermissions);
+                        finish();
+                    }
+                });
+                builder.create().show();
+            } else {
                 if (definePermissions.size() == 0) {
                     callBack.success();
                 } else {
                     callBack.define(definePermissions);
                 }
-            } else {
-                callBack.define(Arrays.asList(permissions));
+                finish();
             }
+
         }
-        finish();
     }
 
     @Override

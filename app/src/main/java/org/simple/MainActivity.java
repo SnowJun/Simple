@@ -65,26 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-//        AndPermission.with(this).runtime().permission(Permission.READ_EXTERNAL_STORAGE)
-//                .onGranted(new Action<List<String>>() {
-//                    @Override
-//                    public void onAction(List<String> data) {
-//
-//                    }
-//                })
-//                .onDenied(new Action<List<String>>() {
-//                    @Override
-//                    public void onAction(List<String> data) {
-//
-//                    }
-//                })
-//                .rationale(new Rationale<List<String>>() {
-//                    @Override
-//                    public void showRationale(Context context, List<String> data, RequestExecutor executor) {
-//
-//                    }
-//                }).start();
-
     }
 
     @Override
